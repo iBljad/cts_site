@@ -29,8 +29,8 @@ class Link(models.Model):
 class Req(models.Model):
     platform = models.ForeignKey(Platform)
     game = models.ForeignKey(Game)
-    nickname = models.CharField(max_length=200)
-    comment = models.CharField(max_length=2000)
+    nickname = models.CharField(max_length=20)
+    comment = models.CharField(max_length=280)
     pub_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
