@@ -6,7 +6,8 @@
 
 
     {% if reqs %}
-        <table align="center" class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
+        <table align="center"
+               class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
 
             <thead>
             <tr>
@@ -21,11 +22,11 @@
             <tbody>
             {% for req in reqs %}
                 <tr>
-                    <td style="word-break:break-all;" class="col-md-1">{{ req.game }}</td>
-                    <td style="word-break:break-all;" class="col-md-1">{{ req.platform }}</td>
-                    <td style="word-break:break-all;" class="col-md-2">{{ req.nickname }}</td>
-                    <td style="word-break:break-all;" class="col-md-6">{{ req.comment }}</td>
-                    <td style="word-break:break-all;" class="col-md-2">{{ req.pub_date|date:"H:i, F d Y" }}</td>
+                    <td class="col-md-1">{{ req.game }}</td>
+                    <td class="col-md-1">{{ req.platform }}</td>
+                    <td class="col-md-1">{{ req.nickname }}</td>
+                    <td style="word-break:break-all;" class="col-md-4">{{ req.comment }}</td>
+                    <td class="col-md-4">{{ req.pub_date|date:"H:i, F d Y" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
