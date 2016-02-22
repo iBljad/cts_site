@@ -1,0 +1,43 @@
+{% extends 'cts_app/base.html' %}
+{% block content %}
+    <h1 align="center">Latest reqs list</h1>
+
+
+
+
+    {% if reqs %}
+        <table align="center" class="table table-nonfluid table-striped table-condensed table-bordered">
+
+            <thead>
+            <tr>
+                <th>Game</th>
+                <th>Platform</th>
+                <th>Nuickname</th>
+                <th>Comment</th>
+                <th>Apply date</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for req in reqs %}
+                <tr>
+                    <td>{{ req.game }}</td>
+                    <td>{{ req.platform }}</td>
+                    <td>{{ req.nickname }}</td>
+                    <td>{{ req.comment }}</td>
+                    <td>{{ req.pub_date|date:"H:i, F d Y" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No reqs are available.</p>
+    {% endif %}
+
+
+    <h2>Didn't found your game? Create your own request!</h2>
+    {% for platform in platforms %}
+        <a href="{% url 'cts_app:create' platform.id %}">{{ platform.platform }}</a><br>
+    {% endfor %}
+
+{% endblock content %}
