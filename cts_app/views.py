@@ -23,7 +23,7 @@ def create(request, platform_id, error=''):
         form = GamesDD(games=games, platform=platform)
         error = error
     except Platform.DoesNotExist:
-        raise Http404("Error occured")
+        raise Http404("Error occurred")
 
     return render(request, 'cts_app/create.html', {'games': games, 'forms': form, 'error': error})
 
