@@ -18,16 +18,21 @@ class NameForm(forms.Form):
 
 class GamesDD(forms.Form):
     game = forms.ChoiceField()
-    platform = forms.ChoiceField()
+    platform = forms.ChoiceField(widget=forms.HiddenInput())
     nickname = forms.CharField(max_length=20)
-    comment = forms.CharField(max_length=280)
+    comment = forms.CharField(max_length=280, widget=forms.Textarea())
 
     def __init__(self, *args, **kwargs):
         self.games_list = kwargs.pop('games')
         self.platform_id = kwargs.pop('platform')
         # self.game = forms.ChoiceField()
         super(GamesDD, self).__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control'
+        })
         self.fields['game'].choices = [(p.pk, p.game) for p in self.games_list]
-        self.fields['platform'].choices = [(p.pk, p.platform) for p in [self.platform_id]]
-        self.fields['platform'].initial = self.platform_id
-        self.fields['platform'].widget.attrs['readonly'] = True
+        self.fields['platform'].choices = [(p.pk) for p in [self.platform_id]]
+        self.fields['platform'].initial = self.platform_id.id
+
+

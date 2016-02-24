@@ -5,22 +5,41 @@
     <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        .row-centered {
+            text-align:center;
+        }
+        .col-centered {
+            display:inline-block;
+            float:none;
+            /* reset the text-align */
+            text-align:left;
+            /* inline-block space fix */
+            margin-right:-4px;
+            vertical-align: top;
+        }
+    </style>
 </head>
 
 <body>
 
 <!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+<div id="createModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
 
         <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Modal Header</h4>
+                <h6 class="modal-title">Choose your platform</h6>
             </div>
             <div class="modal-body">
-                <p>Some text in the modal.</p>
+                        <a href="/cts_app/create/1">PS3</a><br>
+                        <a href="/cts_app/create/2">PS4</a><br>
+                        <a href="/cts_app/create/3">Xbox 360</a><br>
+                        <a href="/cts_app/create/4">Xbox One</a><br>
+                        <a href="/cts_app/create/5">Wii U</a><br>
+                        <a href="/cts_app/create/6">PC</a><br>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -33,42 +52,44 @@
 
 <div class="row">
     <div class="col-md-2"></div>
+
     <div class="col-md-8">
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">WebSiteName</a>
-                </div>
-                <div class="collapse navbar-collapse" id="myNavbar">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><!-- Trigger the modal with a button -->
-                            <button type="button" class="btn btn-default" data-toggle="modal"
-                                    data-target="#myModal">Open Modal
-                            </button>
+                    
+                    <ul class="nav nav-pills">
+                        <li class="{% if nbar == 'home' %}active{% endif %}"><a href="{% url 'cts_app:index' %}" >Home</a></li>
+                        <li class="{% if nbar == 'create' %}active{% endif %}"><!-- Trigger the modal with a button -->
+                            <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
                         </li>
-                        <li><a href="#">Page 2</a></li>
-                        <li><a href="#">Page 3</a></li>
+                        <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search for teammate</a></li>
+                        <li class="{% if nbar == 'pag3' %}active{% endif %}"><a href="#">How it works</a></li>
+                        
+                        <form action={% url 'cts_app:quicksearch' %} class="navbar-form navbar-right input-sm" role="form" method="post">
+                            {% csrf_token %} 
+                            <div class="form-group">
+                              <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" >Search</button>
+                        </form>
                     </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+      
 
 
-
-        {% block content %}
-        {% endblock %}
+        <div class="panel panel-default">
+          <div class="panel-heading">{% block title %}{% endblock %}</div>
+          <div class="panel-body">
+                {% block content %}
+                {% endblock %}
+                  </div>
+        </div>
     </div>
     <div class="col-md-2"></div>
 </div>
+<script>
+$(document).ready(function(){
+    $('.btn').tooltip({title: "Type in game, platform or even nickname", html: true, placement: "bottom"}); 
+});
+</script>
 </body>
 </html>
+
+

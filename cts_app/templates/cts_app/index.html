@@ -1,20 +1,20 @@
 {% extends 'cts_app/base.html' %}
+{% block title %}Latest requests list{% endblock %}
 {% block content %}
-    <h1 align="center">Latest reqs list</h1>
 
 
 
 
-    {% if reqs %}
+    {% if reqs %}<div class="panel panel-default">
         <table align="center"
                class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
 
             <thead>
             <tr>
-                <th class="col-md-1">Game</th>
+                <th class="col-md-2">Game</th>
                 <th class="col-md-1">Platform</th>
                 <th class="col-md-1">Nickname</th>
-                <th class="col-md-7">Comment</th>
+                <th class="col-md-6">Comment</th>
                 <th class="col-md-2">Apply date</th>
             </tr>
             </thead>
@@ -26,19 +26,13 @@
                     <td class="col-md-1">{{ req.platform }}</td>
                     <td class="col-md-1">{{ req.nickname }}</td>
                     <td style="word-break:break-all;" class="col-md-4">{{ req.comment }}</td>
-                    <td class="col-md-4">{{ req.pub_date|date:"H:i, F d Y" }}</td>
+                    <td class="col-md-4">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
-        </table>
+        </table></div>
     {% else %}
         <p>No reqs are available.</p>
     {% endif %}
-
-
-    <h2>Didn't found your game? Create your own request!</h2>
-    {% for platform in platforms %}
-        <a href="{% url 'cts_app:create' platform.id %}">{{ platform.platform }}</a><br>
-    {% endfor %}
 
 {% endblock content %}

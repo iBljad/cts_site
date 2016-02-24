@@ -37,7 +37,17 @@ class Req(models.Model):
         return self.pub_date.__str__()
 
 
+class SearchFormModel(ModelForm):
+    class Meta:
+        model = Req
+        exclude = ['pub_date', 'comment']
+
+
+
 class GamesDDForm(ModelForm):
     class Meta:
         model = Req
         exclude = ['pub_date']
+
+
+
