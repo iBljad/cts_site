@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import Req, Platform, Game, Link, GamesDDForm,  SearchFormModel
+from .models import Req, Platform, Game, Link, GamesDDForm, SearchFormModel
 from .forms import GamesDD
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
@@ -36,13 +36,13 @@ def apply(request):
 
         try:
             ttt = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'],
-                                  nickname=request.POST['nickname'].strip(),
-                                  pub_date__gte=timezone.now() - timedelta(days=1))
+                                     nickname=request.POST['nickname'].strip(),
+                                     pub_date__gte=timezone.now() - timedelta(days=1))
             # return HttpResponse('Entry is duplicate, please try again...')
             return HttpResponseRedirect(
                 reverse('cts_app:create_err', kwargs={'platform_id': request.POST['platform'],
                                                       'error': 'Request with the same platform, game and nickname already exist'})
-            )	
+            )
 
         except Req.DoesNotExist:
             try:
@@ -60,45 +60,47 @@ def apply(request):
 
 
 def search(request):
-	form = SearchFormModel()
+    form = SearchFormModel()
 
-	return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search'})
-
-
-def result(request, error = ''):
-
-	form = SearchFormModel()
-	if request.method == 'POST':
-		if   request.POST['game']!='' and request.POST['platform']!='' and request.POST['nickname'].strip()!='':
-			result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'], nickname=request.POST['nickname'].strip())
-
-		elif request.POST['game']!='' and request.POST['platform']!='' and request.POST['nickname'].strip()=='':
-			result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'])
-
-		elif request.POST['game']!='' and request.POST['platform']=='' and request.POST['nickname'].strip()!='':
-			result = Req.objects.filter(game=request.POST['game'], nickname=request.POST['nickname'].strip())
-
-		elif request.POST['game']!='' and request.POST['platform']=='' and request.POST['nickname'].strip()=='':
-			result = Req.objects.filter(game=request.POST['game'])
-
-		elif request.POST['game']=='' and request.POST['platform']!='' and request.POST['nickname'].strip()!='':
-			result = Req.objects.filter(platform=request.POST['platform'], nickname=request.POST['nickname'].strip())
-
-		elif request.POST['game']=='' and request.POST['platform']!='' and request.POST['nickname'].strip()=='':
-			result = Req.objects.filter(platform=request.POST['platform'])
-
-		elif request.POST['game']=='' and request.POST['platform']=='' and request.POST['nickname'].strip()!='':
-			result = Req.objects.filter(nickname=request.POST['nickname'].strip())
-
-		else:
-			return render(request, 'cts_app/search.html',  {'forms': form, 'nbar': 'search', 
-				'error': 'Please select at least one field to seacrh'})
-
-	return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
+    return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search'})
 
 
-def quicksearch (request):
-	if request.method == 'POST':
-		result = Req.objects.filter(Q(game__game=request.POST['query']) | Q(platform__platform=request.POST['query']) | Q(nickname=request.POST['query'].strip()))
+def result(request, error=''):
+    form = SearchFormModel()
+    if request.method == 'POST':
+        if request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
+            result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'],
+                                        nickname=request.POST['nickname'].strip())
 
-	return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
+        elif request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
+            result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'])
+
+        elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
+            result = Req.objects.filter(game=request.POST['game'], nickname=request.POST['nickname'].strip())
+
+        elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() == '':
+            result = Req.objects.filter(game=request.POST['game'])
+
+        elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
+            result = Req.objects.filter(platform=request.POST['platform'], nickname=request.POST['nickname'].strip())
+
+        elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
+            result = Req.objects.filter(platform=request.POST['platform'])
+
+        elif request.POST['game'] == '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
+            result = Req.objects.filter(nickname=request.POST['nickname'].strip())
+
+        else:
+            return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search',
+                                                           'error': 'Please select at least one field to seacrh'})
+
+    return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
+
+
+def quicksearch(request):
+    if request.method == 'POST':
+        result = Req.objects.filter(
+            Q(game__game=request.POST['query']) | Q(platform__platform=request.POST['query']) | Q(
+                nickname=request.POST['query'].strip()))
+
+    return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})

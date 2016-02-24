@@ -43,11 +43,7 @@ class SearchFormModel(ModelForm):
         exclude = ['pub_date', 'comment']
 
 
-
 class GamesDDForm(ModelForm):
     class Meta:
         model = Req
         exclude = ['pub_date']
-
-
-

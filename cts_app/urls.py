@@ -10,7 +10,6 @@ urlpatterns = [
     url(r'^apply$', views.apply, name='apply'),
     url(r'^search$', view=views.search, name='search'),
     url(r'^result$', view=views.result, name='result'),
-	url(r'^quicksearch$', view=views.quicksearch, name='quicksearch'),
-    
+    url(r'^quicksearch$', view=views.quicksearch, name='quicksearch'),
 
 ]

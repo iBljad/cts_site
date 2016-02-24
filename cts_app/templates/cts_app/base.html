@@ -7,15 +7,16 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <style type="text/css">
         .row-centered {
-            text-align:center;
+            text-align: center;
         }
+
         .col-centered {
-            display:inline-block;
-            float:none;
+            display: inline-block;
+            float: none;
             /* reset the text-align */
-            text-align:left;
+            text-align: left;
             /* inline-block space fix */
-            margin-right:-4px;
+            margin-right: -4px;
             vertical-align: top;
         }
     </style>
@@ -34,12 +35,12 @@
                 <h6 class="modal-title">Choose your platform</h6>
             </div>
             <div class="modal-body">
-                        <a href="/cts_app/create/1">PS3</a><br>
-                        <a href="/cts_app/create/2">PS4</a><br>
-                        <a href="/cts_app/create/3">Xbox 360</a><br>
-                        <a href="/cts_app/create/4">Xbox One</a><br>
-                        <a href="/cts_app/create/5">Wii U</a><br>
-                        <a href="/cts_app/create/6">PC</a><br>
+                <a href="/cts_app/create/1">PS3</a><br>
+                <a href="/cts_app/create/2">PS4</a><br>
+                <a href="/cts_app/create/3">Xbox 360</a><br>
+                <a href="/cts_app/create/4">Xbox One</a><br>
+                <a href="/cts_app/create/5">Wii U</a><br>
+                <a href="/cts_app/create/6">PC</a><br>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -54,40 +55,42 @@
     <div class="col-md-2"></div>
 
     <div class="col-md-8">
-                    
-                    <ul class="nav nav-pills">
-                        <li class="{% if nbar == 'home' %}active{% endif %}"><a href="{% url 'cts_app:index' %}" >Home</a></li>
-                        <li class="{% if nbar == 'create' %}active{% endif %}"><!-- Trigger the modal with a button -->
-                            <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
-                        </li>
-                        <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search for teammate</a></li>
-                        <li class="{% if nbar == 'pag3' %}active{% endif %}"><a href="#">How it works</a></li>
-                        
-                        <form action={% url 'cts_app:quicksearch' %} class="navbar-form navbar-right input-sm" role="form" method="post">
-                            {% csrf_token %} 
-                            <div class="form-group">
-                              <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
-                            </div>
-                            <button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" >Search</button>
-                        </form>
-                    </ul>
-      
+
+        <ul class="nav nav-pills">
+            <li class="{% if nbar == 'home' %}active{% endif %}"><a href="{% url 'cts_app:index' %}">Home</a></li>
+            <li class="{% if nbar == 'create' %}active{% endif %}"><!-- Trigger the modal with a button -->
+                <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
+            </li>
+            <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search for
+                teammate</a></li>
+            <li class="{% if nbar == 'pag3' %}active{% endif %}"><a href="#">How it works</a></li>
+
+            <form action={% url 'cts_app:quicksearch' %} class="navbar-form navbar-right input-sm
+            " role="form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom">Search
+            </button>
+            </form>
+        </ul>
 
 
         <div class="panel panel-default">
-          <div class="panel-heading">{% block title %}{% endblock %}</div>
-          <div class="panel-body">
+            <div class="panel-heading">{% block title %}{% endblock %}</div>
+            <div class="panel-body">
                 {% block content %}
                 {% endblock %}
-                  </div>
+            </div>
         </div>
     </div>
     <div class="col-md-2"></div>
 </div>
 <script>
-$(document).ready(function(){
-    $('.btn').tooltip({title: "Type in game, platform or even nickname", html: true, placement: "bottom"}); 
-});
+    $(document).ready(function () {
+        $('.btn').tooltip({title: "Type in game, platform or even nickname", html: true, placement: "bottom"});
+    });
 </script>
 </body>
 </html>

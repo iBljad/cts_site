@@ -30,9 +30,7 @@ class GamesDD(forms.Form):
         for field in iter(self.fields):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control'
-        })
+            })
         self.fields['game'].choices = [(p.pk, p.game) for p in self.games_list]
         self.fields['platform'].choices = [(p.pk) for p in [self.platform_id]]
         self.fields['platform'].initial = self.platform_id.id
-
-
