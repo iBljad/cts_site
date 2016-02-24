@@ -71,7 +71,8 @@
             <div class="form-group">
                 <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
             </div>
-            <button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom">Search
+            <button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Ho<p>oray!"
+                    data-placement="bottom">Search
             </button>
             </form>
         </ul>
@@ -89,9 +90,10 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('.btn').tooltip({title: "Type in game, platform or even nickname", html: true, placement: "bottom"});
+        $('[data-toggle="tooltip"]').tooltip({html: true});
     });
 </script>
+
 </body>
 </html>
 
