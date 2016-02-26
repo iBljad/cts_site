@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="http://bootswatch.com/cyborg/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cyborg/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <style type="text/css">
@@ -18,6 +18,13 @@
             /* inline-block space fix */
             margin-right: -4px;
             vertical-align: top;
+        }
+        /* Tooltip */
+        .test + .tooltip.bottom > .tooltip-inner {
+            border: 1px solid #2a9fd6
+        }
+        .test + .tooltip.bottom > .tooltip-arrow {
+            border-bottom: 5px solid #2a9fd6;
         }
     </style>
 </head>
@@ -35,12 +42,25 @@
                 <h6 class="modal-title">Choose your platform</h6>
             </div>
             <div class="modal-body">
-                <a href="/cts_app/create/1">PS3</a><br>
-                <a href="/cts_app/create/2">PS4</a><br>
-                <a href="/cts_app/create/3">Xbox 360</a><br>
-                <a href="/cts_app/create/4">Xbox One</a><br>
-                <a href="/cts_app/create/5">Wii U</a><br>
-                <a href="/cts_app/create/6">PC</a><br>
+<a href="create/2">PS4</a><br>
+<a href="create/1">PS3</a><br>
+<a href="create/17">Xbox ONE</a><br>
+<a href="create/3">Xbox 360</a><br>
+<a href="create/5">Wii U</a><br>
+<a href="create/6">PC</a><br>
+<a href="create/18">Android</a><br>
+<a href="create/19">iOS</a><br>
+<a href="create/7">Sony PSP</a><br>
+<a href="create/8">PS2</a><br>
+<a href="create/9">Xbox</a><br>
+<a href="create/12">PS</a><br>
+<a href="create/10">Wii</a><br>
+<a href="create/11">NDS</a><br>
+<a href="create/14">Mac</a><br>
+<a href="create/15">N64</a><br>
+<a href="create/16">Sega Saturn</a><br>
+<a href="create/20">GCN</a><br>
+<a href="create/21">GBA</a><br>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -63,7 +83,7 @@
             </li>
             <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search for
                 teammate</a></li>
-            <li class="{% if nbar == 'pag3' %}active{% endif %}"><a href="#">How it works</a></li>
+            
 
             <form action={% url 'cts_app:quicksearch' %} class="navbar-form navbar-right input-sm
             " role="form" method="post">
@@ -71,7 +91,7 @@
             <div class="form-group">
                 <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
             </div>
-            <button type="submit" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Ho<p>1oray!"
+            <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip" 
                     data-placement="bottom">Search
             </button>
             </form>
@@ -84,13 +104,23 @@
                 {% block content %}
                 {% endblock %}
             </div>
+            <div class="panel-footer">
+                <small>
+                All product names, logos, and brands are property of their respective owners. All company, product and service names used in this website are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.
+                <p>Special thanks to <a href="http://glyphicons.com/" target="_blank">Glyphicons</a> and <a href="http://bootswatch.com/" target="_blank">Bootswatch</a>.
+                <p>You can find me here: <a href="https://twitter.com/ibljad" target="_blank">@iBljad</a>
+                </small>
+            </div>
         </div>
     </div>
     <div class="col-md-2"></div>
 </div>
 <script>
     $(document).ready(function () {
-        $('[data-toggle="tooltip"]').tooltip({html: true});
+        $('[data-toggle="tooltip"]').tooltip({
+  html: true,
+  title: '<p align="left">Type in game, platform or even nickname!</p><p align="left"> E.g. PC, Dead Space 3 or MightyGamer2016</p>'
+});
     });
 </script>
 
