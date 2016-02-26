@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^search$', view=views.search, name='search'),
     url(r'^result$', view=views.result, name='result'),
     url(r'^quicksearch$', view=views.quicksearch, name='quicksearch'),
+    url(r'^imp$', view=views.imp, name='imp'),
 
 ]
