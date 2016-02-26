@@ -2,7 +2,10 @@
 {% block title %}Search for request{% endblock %}
 
 {% block content %}
-
+    <div class="row">
+        <div class="controls col-centered col-sm-6" align="right">
+        </div>
+    </div>
     <div class="row row-centered">
         {% if error %}
             <div class="row">
@@ -52,6 +55,7 @@
                 <div class="col-sm-4 col-centered" align="right">
                     <input type="submit" class="btn btn-primary" value="Submit">
                 </div>
+            </div>
         </form>
     </div>
 {% endblock content %}
