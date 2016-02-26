@@ -15,7 +15,7 @@
                     <th class="col-md-2">Game</th>
                     <th class="col-md-1">Platform</th>
                     <th class="col-md-1">Nickname</th>
-                    <th class="col-md-6">Comment</th>
+                    <th class="col-md-5">Comment</th>
                     <th class="col-md-2">Apply date</th>
                 </tr>
                 </thead>
@@ -36,5 +36,9 @@
     {% else %}
         <p>No reqs are available.</p>
     {% endif %}
-
+<!-- {% for platform in platforms %}
+<a href="create/{{ platform.id }}">{{ platform.platform }}</a><br>
+{% endfor %}
+ -->
 {% endblock content %}
+
