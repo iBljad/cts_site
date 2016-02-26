@@ -35,7 +35,7 @@ def apply(request):
         GamesDDForm.full_clean(f)
 
         try:
-            ttt = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'],
+            ttt = Req.objects.get(game=request.POST['game'], platform=request.POST['platform'],
                                      nickname=request.POST['nickname'].strip(),
                                      pub_date__gte=timezone.now() - timedelta(days=1))
             # return HttpResponse('Entry is duplicate, please try again...')
