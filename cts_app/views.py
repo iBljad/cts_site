@@ -36,7 +36,7 @@ def apply(request):
 
         try:
             ttt = Req.objects.get(game=request.POST['game'], platform=request.POST['platform'],
-                                     nickname=request.POST['nickname'].strip(),
+                                     nickname__iexact=request.POST['nickname'].strip(),
                                      pub_date__gte=timezone.now() - timedelta(days=1))
             # return HttpResponse('Entry is duplicate, please try again...')
             return HttpResponseRedirect(
@@ -52,7 +52,7 @@ def apply(request):
 
             else:
                 return HttpResponseRedirect(reverse('cts_app:index'))
-
+                
                 # if request.method == 'POST':
                 # 	f = GamesDDForm(request.POST)
                 # 	new_req =f.save()
@@ -69,26 +69,26 @@ def result(request, error=''):
     form = SearchForm()
     if request.method == 'POST':
         if request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'],
-                                        nickname=request.POST['nickname'].strip())
+            result = Req.objects.filter(game__iexact=request.POST['game'], platform__iexact=request.POST['platform'],
+                                        nickname__iexact=request.POST['nickname'].strip())
 
         elif request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'])
+            result = Req.objects.filter(game__iexact=request.POST['game'], platform__iexact=request.POST['platform'])
 
         elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(game=request.POST['game'], nickname=request.POST['nickname'].strip())
+            result = Req.objects.filter(game__iexact=request.POST['game'], nickname__iexact=request.POST['nickname'].strip())
 
         elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(game=request.POST['game'])
+            result = Req.objects.filter(game__iexact=request.POST['game'])
 
         elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(platform=request.POST['platform'], nickname=request.POST['nickname'].strip())
+            result = Req.objects.filter(platform__iexact=request.POST['platform'], nickname__iexact=request.POST['nickname'].strip())
 
         elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(platform=request.POST['platform'])
+            result = Req.objects.filter(platform__iexact=request.POST['platform'])
 
         elif request.POST['game'] == '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(nickname=request.POST['nickname'].strip())
+            result = Req.objects.filter(nickname__iexact=request.POST['nickname'].strip())
 
         else:
             return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search',
@@ -100,7 +100,9 @@ def result(request, error=''):
 def quicksearch(request):
     if request.method == 'POST':
         result = Req.objects.filter(
-            Q(game__game=request.POST['query']) | Q(platform__platform=request.POST['query']) | Q(
-                nickname=request.POST['query'].strip()))
+            Q(game__game__icontains=request.POST['query']) | Q(platform__platform__icontains=request.POST['query']) | Q(
+                nickname__icontains=request.POST['query'].strip()))
 
     return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
+
+
