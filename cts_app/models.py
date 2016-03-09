@@ -60,7 +60,6 @@ class RegisterForm(ModelForm):
                 'autocomplete': 'off'
             })
 
-
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
@@ -82,14 +81,14 @@ class LoginForm(ModelForm):
         fields = ['username', 'password']
 
     password = forms.CharField(widget=forms.PasswordInput)
-    
+
 
 # class Gamer(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
 #     rating = models.CharField(max_length=100)
 
 
-class votes(models.Model):
+class Votes(models.Model):
     user = models.ForeignKey(User)
     rate = models.PositiveSmallIntegerField()
-    voted_user = models.ForeignKey(User)
+    voted_user = models.ForeignKey(User, related_name='Voter')

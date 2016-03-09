@@ -2,12 +2,12 @@
 {% block title %}Latest requests list{% endblock %}
 {% block content %}
 
-{%if message %}
-    <div class="alert alert-dismissible alert-success">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      {{message}}
-    </div>
-{% endif %}
+    {% if message %}
+        <div class="alert alert-dismissible alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+    {% endif %}
 
 
     {% if reqs %}
@@ -41,7 +41,7 @@
     {% else %}
         <p>No reqs are available.</p>
     {% endif %}
-<!-- {% for platform in platforms %}
+    <!-- {% for platform in platforms %}
 <a href="create/{{ platform.id }}">{{ platform.platform }}</a><br>
 {% endfor %}
  -->

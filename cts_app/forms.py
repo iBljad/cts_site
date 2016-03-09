@@ -6,7 +6,7 @@ class GamesDD(forms.Form):
     game = forms.ChoiceField()
     platform = forms.ChoiceField(widget=forms.HiddenInput())
     nickname = forms.CharField(widget=forms.HiddenInput())
-    comment = forms.CharField(max_length=280, widget=forms.Textarea(),initial='')
+    comment = forms.CharField(max_length=280, widget=forms.Textarea(), initial='')
 
     def __init__(self, *args, **kwargs):
         self.nickname = kwargs.pop('user')
@@ -23,12 +23,12 @@ class GamesDD(forms.Form):
         self.fields['platform'].initial = self.platform_id.id
         self.fields['nickname'].initial = self.nickname.id
 
-class SearchForm(forms.Form):
-	platforms = [(p.pk, p.platform) for p in Platform.objects.all()] + [('','---------')]
-	games = [(p.pk, p.game) for p in Game.objects.all()] + [('','---------')]
-	platform = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}),
-		choices=platforms)
-	game = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}),
-		choices=games)
-	nickname = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}),max_length=20)
 
+class SearchForm(forms.Form):
+    platforms = [(p.pk, p.platform) for p in Platform.objects.all()] + [('', '---------')]
+    games = [(p.pk, p.game) for p in Game.objects.all()] + [('', '---------')]
+    platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
+                                 choices=platforms)
+    game = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
+                             choices=games)
+    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), max_length=20)
