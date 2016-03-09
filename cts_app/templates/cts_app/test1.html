@@ -1,8 +1,14 @@
 {% extends 'cts_app/base.html' %}
-{% block title %}Search for request{% endblock %}
-
+{% block title %}Test{% endblock %}
 {% block content %}
-    <div class="row">
+
+{{ user.username }}
+
+
+{% if not user.is_authenticated %}
+
+Test
+<div class="row">
         <div class="controls col-centered col-sm-6" align="right">
         </div>
     </div>
@@ -16,7 +22,7 @@
             </div>
         {% endif %}
 
-        <form action={% url 'cts_app:result' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
+        <form action={% url 'cts_app:register' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
             {#%cts_app:apply %#}
 
 
@@ -58,4 +64,8 @@
             </div>
         </form>
     </div>
+{% else %}
+<h1>Rango says... hello world!</h1>
+{% endif %}
+
 {% endblock content %}

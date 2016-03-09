@@ -7,7 +7,7 @@
 
 
 
-
+{% if user.is_authenticated %}
     <div class="row">
         <div class="controls col-centered col-sm-6" align="right">
         </div>
@@ -61,7 +61,12 @@
                 <div class="col-sm-4 col-centered" align="right">
                     <input type="submit" class="btn btn-primary" value="Submit">
                 </div>
+            </div>
         </form>
     </div>
+{% else %}
+    You are not logged in, please <a href="{% url 'cts_app:login_page' %}">log in or register</a></li>
+{% endif %}
+
 
 {% endblock content %}

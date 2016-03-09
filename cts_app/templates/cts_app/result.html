@@ -11,7 +11,7 @@
                     <th class="col-md-2">Game</th>
                     <th class="col-md-1">Platform</th>
                     <th class="col-md-1">Nickname</th>
-                    <th class="col-md-6">Comment</th>
+                    <th class="col-md-5">Comment</th>
                     <th class="col-md-2">Apply date</th>
                 </tr>
                 </thead>
@@ -19,11 +19,11 @@
                 <tbody>
                 {% for req in result %}
                     <tr>
-                        <td class="col-md-1">{{ req.game }}</td>
+                        <td class="col-md-2">{{ req.game }}</td>
                         <td class="col-md-1">{{ req.platform }}</td>
                         <td class="col-md-1">{{ req.nickname }}</td>
-                        <td style="word-break:break-all;" class="col-md-4">{{ req.comment }}</td>
-                        <td class="col-md-4">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
+                        <td style="word-break:break-all;" class="col-md-5">{{ req.comment }}</td>
+                        <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

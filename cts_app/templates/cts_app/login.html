@@ -1,0 +1,131 @@
+{% extends 'cts_app/base.html' %}
+{% block title %}Login/register{% endblock %}
+{% block content %}
+
+
+
+
+{% if not user.is_authenticated %}
+<h5>Login</h5>
+<div class="row">
+        <div class="controls col-centered col-sm-6" align="right">
+        </div>
+    </div>
+    <div class="row row-centered">
+        {% if error2 %}
+            <div class="row">
+                <div class="alert alert-dismissible alert-danger col-centered col-sm-6">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ error2 }}
+                </div>
+            </div>
+        {% endif %}
+
+        <form action={% url 'cts_app:login_view' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
+            
+
+
+            {% for field in forms2 %}
+                {% if field.errors %}
+                    <div class="form-group error">
+                        <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+
+                        <div class="controls col-centered col-sm-4">{{ field }}
+                            <span class="help-inline">
+                                {% for error in  field.errors %}<p class="text-danger">{{ error }}</p>{% endfor %}
+                            </span>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="form-group">
+                            <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+
+                            <div class="controls col-centered col-sm-4">{{ field }}
+                                {% if field.help_text %}
+                                    <p class="help-inline">
+                                        <small>{{ field.help_text }}</small>
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-group">
+                <div class="col-sm-1 col-centered"></div>
+                <div class="col-sm-4 col-centered" align="right">
+                    <input type="submit" class="btn btn-primary" value="Log in">
+                </div>
+            </div>
+        </form>
+    </div>
+
+<h5>OR register</h5>
+
+<div class="row">
+        <div class="controls col-centered col-sm-6" align="right">
+        </div>
+    </div>
+    <div class="row row-centered">
+        {% if error1 %}
+            <div class="row">
+                <div class="alert alert-dismissible alert-danger col-centered col-sm-6">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ error1 }}
+                </div>
+            </div>
+        {% endif %}
+
+        <form autocomplete="off" action={% url 'cts_app:register' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
+            
+
+
+            {% for field in forms %}
+                {% if field.errors %}
+                    <div class="form-group error">
+                        <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+
+                        <div class="controls col-centered col-sm-4">{{ field }}
+                            <span class="help-inline">
+                                {% for error in  field.errors %}<p class="text-danger">{{ error }}</p>{% endfor %}
+                            </span>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <input style="display:none" type="text" name="fakeusernameremembered"/>
+                        <input style="display:none" type="password" name="fakepasswordremembered"/>
+                        <div class="form-group">
+                            <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+
+                            <div class="controls col-centered col-sm-4">{{ field }}
+                                {% if field.help_text %}
+                                    <p class="help-inline">
+                                        <small>{{ field.help_text }}</small>
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-group">
+                <div class="col-sm-1 col-centered"></div>
+                <div class="col-sm-4 col-centered" align="right">
+                    <input type="submit" class="btn btn-primary" value="Register">
+                </div>
+            </div>
+        </form>
+    </div>
+{% else %}
+You are already logged in as {{ user.username }}
+{% endif %}
+
+{% endblock content %}

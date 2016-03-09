@@ -1,7 +1,8 @@
 *.pyc
 __pycache__
 myvenv
-db.sqlite3
 /static
 .DS_Store
 .idea
+import
+cts_site/local_settings.py
