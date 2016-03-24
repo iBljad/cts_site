@@ -171,8 +171,9 @@ def login_view(request):
             return index(request, message='You were succesfully logged in')
         else:
             # Return a 'disabled account' error message
-            return render(request, 'cts_app/login.html', {'nbar': 'Log in/register', 'forms': form, 'forms2': form2,
-                                                          'error2': 'Your account was disabled'})
+            return render(request, 'cts_app/login.html',
+                          {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm(),
+                           'error2': 'Your account was disabled'})
             # Return an 'invalid login' error message.
     else:
         return render(request, 'cts_app/login.html',
@@ -215,8 +216,10 @@ def vote(request):
                 vote.comment = request.POST['comment']
                 vote.pub_date = timezone.now()
                 vote.save(update_fields=['rate', 'comment', 'pub_date'])
-            # vote.save()
-        return HttpResponseRedirect('/profile/' + request.POST['user'])
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def reqdel(request, req_id):
+    if request.user.username == Req.objects.get(id=req_id).nickname.__str__():
+        Req.objects.get(id=req_id).delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

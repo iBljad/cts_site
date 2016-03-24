@@ -109,7 +109,7 @@
                         <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
 
                         {% if user.is_authenticated and user.username == user1.username %}
-                            <td class="col-md-2">Options</td>
+                            <td class="col-md-2"><a href="{% url 'cts_app:reqdel' req.id %}">Delete</a></td>
                         {% endif %}
 
                     </tr>
