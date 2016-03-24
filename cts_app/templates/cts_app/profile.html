@@ -1,0 +1,167 @@
+{% extends 'cts_app/base.html' %}
+{% block title %}<h4>{{ user1.username }}'s profile</h4>{% endblock %}
+{% block content %}
+
+    <!-- Modal -->
+    <div id="RateModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h6 class="modal-title">Rate user</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="col-sm-2 col-centered"></div>
+                        <div class="col-sm-8 col-centered" align="right">
+                            Your existing rate will be overridden
+                        </div>
+                    </div>
+                    <form action={% url 'cts_app:vote' %} method="post" class="form-horizontal"
+                          role="form">{% csrf_token %}
+                        {#%cts_app:apply %#}
+
+
+                        {% for field in forms %}
+                            {% if field.errors %}
+                                <div class="form-group error">
+                                    <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+
+                                    <div class="controls col-centered col-sm-4">{{ field }}
+                                    <span class="help-inline">
+                                        {% for error in  field.errors %}{{ error }}{% endfor %}
+                                    </span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                {% if field.is_hidden %}
+                                    {{ field }}
+                                {% else %}
+                                    <div class="form-group">
+                                        <label class="control-label col-centered col-sm-2">{{ field.label }}</label>
+
+                                        <div class="controls col-centered col-sm-8">{{ field }}
+                                            {% if field.help_text %}
+                                                <p class="help-inline">
+                                                    <small>{{ field.help_text }}</small>
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <div class="form-group">
+                            <div class="col-sm-2 col-centered"></div>
+                            <div class="col-sm-8 col-centered" align="right">
+                                <input type="submit" class="btn btn-primary" value="Submit">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {% if message %}
+        <div class="alert alert-dismissible alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+    {% endif %}
+    <!-- START -->
+    Users latest requests
+    {% if reqs %}
+        <div class="panel panel-default">
+            <table align="center"
+                   class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
+
+                <thead>
+                <tr>
+                    <th class="col-md-2">Game</th>
+                    <th class="col-md-1">Platform</th>
+                    <th class="col-md-1">Nickname</th>
+                    <th class="col-md-5">Comment</th>
+                    <th class="col-md-2">Apply date</th>
+
+                    {% if user.is_authenticated and user.username == user1.username %}
+                        <th class="col-md-2">Options</th>
+                    {% endif %}
+
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for req in reqs %}
+                    <tr>
+                        <td class="col-md-2">{{ req.game }}</td>
+                        <td class="col-md-1">{{ req.platform }}</td>
+                        <td class="col-md-1"><a href="{% url 'cts_app:profile' req.nickname %}">{{ req.nickname }}</a>
+                        </td>
+                        <td style="word-break:break-all;" class="col-md-5">{{ req.comment }}</td>
+                        <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
+
+                        {% if user.is_authenticated and user.username == user1.username %}
+                            <td class="col-md-2">Options</td>
+                        {% endif %}
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No reqs are available.</p>
+    {% endif %}
+
+    <p>
+        {% if rating %}
+            User rating is <b>{{ rating|floatformat:-2 }}</b>.
+        {% endif %}
+
+        {% if user.is_authenticated and user.username != user1.username %}
+            <a href="#" data-toggle="modal" data-target="#RateModal">Rate this user</a>
+        {% endif %}
+
+    </p>
+    User rates
+    {% if votes %}
+        <div class="panel panel-default">
+            <table align="center"
+                   class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
+
+                <thead>
+                <tr>
+                    <th class="col-md-1">Rate</th>
+                    <th class="col-md-5">Comment</th>
+                    <th class="col-md-2">Date</th>
+                    <th class="col-md-2">Voter</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for vote in votes %}
+                    <tr>
+                        <td class="col-md-1">{{ vote.rate }}</td>
+                        <td style="word-break:break-all" class="col-md-5">{{ vote.comment }}</td>
+                        <td class="col-md-2">{{ vote.pub_date|date:"H:i, d.m.y" }}</td>
+                        <td class="col-md-2"><a
+                                href="{% url 'cts_app:profile' vote.voted_user %}">{{ vote.voted_user }}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No votes are available.</p>
+    {% endif %}
+
+{% endblock content %}
+

@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import Req, Platform, Game, Link, GamesDDForm, SearchFormModel, RegisterForm, LoginForm
-from .forms import GamesDD, SearchForm
+from .models import Req, Platform, Game, Link, GamesDDForm, SearchFormModel, RegisterForm, LoginForm, Votes
+from .forms import GamesDD, SearchForm, UserVote
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from datetime import timedelta
@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth import logout, authenticate, login
+from django.db.models import Avg
 
 
 def index(request, message=None):
@@ -180,4 +181,42 @@ def login_view(request):
 
 
 def profile(request, user):
-    return render(request, 'cts_app/profile.html', {'nbar': 'Profile'})
+    try:
+        user = User.objects.get(username=user)
+    except User.DoesNotExist:
+        raise Http404("User doesnt exists")
+
+    form = UserVote(user=user, voted_user=request.user)
+    votes = Votes.objects.filter(user=user).order_by('-pub_date')
+    rating = Votes.objects.filter(user=user).aggregate(Avg('rate'))['rate__avg']
+
+    reqs = Req.objects.filter(nickname=user.id).order_by('-pub_date')[:15]
+
+    return render(request, 'cts_app/profile.html', {'nbar': 'Profile', 'user1': user, 'forms': form, 'votes': votes,
+                                                    'rating': rating, 'reqs': reqs})
+
+
+def vote(request):
+    if request.method == 'POST':
+        try:
+            user = User.objects.get(username=request.POST['user'])
+            voted_user = User.objects.get(username=request.POST['voted_user'])
+        except User.DoesNotExist:
+            raise Http404("User doesnt exists")
+        else:
+            try:
+                vote = Votes.objects.get(user=user, voted_user=voted_user)
+
+            except Votes.DoesNotExist:
+                Votes.objects.create(user=user, voted_user=voted_user, rate=request.POST['rate'],
+                                     comment=request.POST['comment'])
+            else:
+                vote.rate = request.POST['rate']
+                vote.comment = request.POST['comment']
+                vote.pub_date = timezone.now()
+                vote.save(update_fields=['rate', 'comment', 'pub_date'])
+            # vote.save()
+        return HttpResponseRedirect('/profile/' + request.POST['user'])
+
+
+def reqdel(request, req_id):

@@ -32,3 +32,30 @@ class SearchForm(forms.Form):
     game = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
                              choices=games)
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), max_length=20)
+
+
+# class Votes(models.Model):
+#     user = models.ForeignKey(User)
+#     rate = models.PositiveSmallIntegerField()
+#     comment = models.CharField(max_length=1000)
+#     voted_user = models.ForeignKey(User, related_name='Voter')
+
+
+class UserVote(forms.Form):
+    my_choices = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+
+    user = forms.CharField(widget=forms.HiddenInput())
+    voted_user = forms.CharField(widget=forms.HiddenInput())
+    rate = forms.ChoiceField(choices=my_choices)
+    comment = forms.CharField(max_length=1000, widget=forms.Textarea(), initial='')
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        self.voted_user = kwargs.pop('voted_user')
+        super(UserVote, self).__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control'
+            })
+        self.fields['user'].initial = self.user
+        self.fields['voted_user'].initial = self.voted_user

@@ -2,70 +2,70 @@
 {% block title %}Test{% endblock %}
 {% block content %}
 
-    {{ user.username }}
+{{ user.username }}
 
 
-    {% if not user.is_authenticated %}
+{% if not user.is_authenticated %}
 
-        Test
-        <div class="row">
-            <div class="controls col-centered col-sm-6" align="right">
-            </div>
+Test
+<div class="row">
+        <div class="controls col-centered col-sm-6" align="right">
         </div>
-        <div class="row row-centered">
-            {% if error %}
-                <div class="row">
-                    <div class="alert alert-dismissible alert-danger col-centered col-sm-6">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        {{ error }}
-                    </div>
+    </div>
+    <div class="row row-centered">
+        {% if error %}
+            <div class="row">
+                <div class="alert alert-dismissible alert-danger col-centered col-sm-6">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ error }}
                 </div>
-            {% endif %}
+            </div>
+        {% endif %}
 
-            <form action={% url 'cts_app:register' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
-                {#%cts_app:apply %#}
+        <form action={% url 'cts_app:register' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
+            {#%cts_app:apply %#}
 
 
-                {% for field in forms %}
-                    {% if field.errors %}
-                        <div class="form-group error">
-                            <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+            {% for field in forms %}
+                {% if field.errors %}
+                    <div class="form-group error">
+                        <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
 
-                            <div class="controls col-centered col-sm-4">{{ field }}
+                        <div class="controls col-centered col-sm-4">{{ field }}
                             <span class="help-inline">
                                 {% for error in  field.errors %}{{ error }}{% endfor %}
                             </span>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="form-group">
+                            <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+
+                            <div class="controls col-centered col-sm-4">{{ field }}
+                                {% if field.help_text %}
+                                    <p class="help-inline">
+                                        <small>{{ field.help_text }}</small>
+                                    </p>
+                                {% endif %}
                             </div>
                         </div>
-                    {% else %}
-                        {% if field.is_hidden %}
-                            {{ field }}
-                        {% else %}
-                            <div class="form-group">
-                                <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
-
-                                <div class="controls col-centered col-sm-4">{{ field }}
-                                    {% if field.help_text %}
-                                        <p class="help-inline">
-                                            <small>{{ field.help_text }}</small>
-                                        </p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
                     {% endif %}
-                {% endfor %}
+                {% endif %}
+            {% endfor %}
 
-                <div class="form-group">
-                    <div class="col-sm-1 col-centered"></div>
-                    <div class="col-sm-4 col-centered" align="right">
-                        <input type="submit" class="btn btn-primary" value="Search">
-                    </div>
+            <div class="form-group">
+                <div class="col-sm-1 col-centered"></div>
+                <div class="col-sm-4 col-centered" align="right">
+                    <input type="submit" class="btn btn-primary" value="Search">
                 </div>
-            </form>
-        </div>
-    {% else %}
-        <h1>Rango says... hello world!</h1>
-    {% endif %}
+            </div>
+        </form>
+    </div>
+{% else %}
+<h1>Rango says... hello world!</h1>
+{% endif %}
 
 {% endblock content %}

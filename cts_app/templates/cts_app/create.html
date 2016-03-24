@@ -7,66 +7,66 @@
 
 
 
-{% if user.is_authenticated %}
-    <div class="row">
-        <div class="controls col-centered col-sm-6" align="right">
-        </div>
-    </div>
-    <div class="row row-centered">
-        {% if error %}
-            <div class="row">
-                <div class="alert alert-dismissible alert-danger col-centered col-sm-6">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    {{ error }}
-                </div>
+    {% if user.is_authenticated %}
+        <div class="row">
+            <div class="controls col-centered col-sm-6" align="right">
             </div>
-        {% endif %}
-
-        <form action={% url 'cts_app:apply' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
-            {#%cts_app:apply %#}
-
-
-            {% for field in forms %}
-                {% if field.errors %}
-                    <div class="form-group error">
-                        <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
-
-                        <div class="controls col-centered col-sm-4">{{ field }}
-                            <span class="help-inline">
-                                {% for error in  field.errors %}{{ error }}{% endfor %}
-                            </span>
-                        </div>
+        </div>
+        <div class="row row-centered">
+            {% if error %}
+                <div class="row">
+                    <div class="alert alert-dismissible alert-danger col-centered col-sm-6">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        {{ error }}
                     </div>
-                {% else %}
-                    {% if field.is_hidden %}
-                        {{ field }}
-                    {% else %}
-                        <div class="form-group">
+                </div>
+            {% endif %}
+
+            <form action={% url 'cts_app:apply' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
+                {#%cts_app:apply %#}
+
+
+                {% for field in forms %}
+                    {% if field.errors %}
+                        <div class="form-group error">
                             <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
 
                             <div class="controls col-centered col-sm-4">{{ field }}
-                                {% if field.help_text %}
-                                    <p class="help-inline">
-                                        <small>{{ field.help_text }}</small>
-                                    </p>
-                                {% endif %}
+                            <span class="help-inline">
+                                {% for error in  field.errors %}{{ error }}{% endfor %}
+                            </span>
                             </div>
                         </div>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+                    {% else %}
+                        {% if field.is_hidden %}
+                            {{ field }}
+                        {% else %}
+                            <div class="form-group">
+                                <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
 
-            <div class="form-group">
-                <div class="col-sm-1 col-centered"></div>
-                <div class="col-sm-4 col-centered" align="right">
-                    <input type="submit" class="btn btn-primary" value="Submit">
+                                <div class="controls col-centered col-sm-4">{{ field }}
+                                    {% if field.help_text %}
+                                        <p class="help-inline">
+                                            <small>{{ field.help_text }}</small>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                <div class="form-group">
+                    <div class="col-sm-1 col-centered"></div>
+                    <div class="col-sm-4 col-centered" align="right">
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
-{% else %}
-    You are not logged in, please <a href="{% url 'cts_app:login_page' %}">log in or register</a></li>
-{% endif %}
+            </form>
+        </div>
+    {% else %}
+        You are not logged in, please <a href="{% url 'cts_app:login_page' %}">log in or register</a></li>
+    {% endif %}
 
 
 {% endblock content %}

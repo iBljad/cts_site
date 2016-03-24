@@ -16,5 +16,8 @@ urlpatterns = [
     url(r'^logout$', view=views.logout_view, name='logout'),
     url(r'^login$', view=views.login_page, name='login_page'),
     url(r'^login_view$', view=views.login_view, name='login_view'),
+    url(r'^profile/(?P<user>.*)$', view=views.profile, name='profile'),
+    url(r'^vote$', view=views.vote, name='vote'),
+    url(r'^reqdel/(?P<req_id>[0-9]+)$', view=views.reqdel, name='reqdel'),
 
 ]

@@ -21,7 +21,8 @@
                     <tr>
                         <td class="col-md-2">{{ req.game }}</td>
                         <td class="col-md-1">{{ req.platform }}</td>
-                        <td class="col-md-1">{{ req.nickname }}</td>
+                        <td class="col-md-1"><a href="{% url 'cts_app:profile' req.nickname %}">{{ req.nickname }}</a>
+                        </td>
                         <td style="word-break:break-all;" class="col-md-5">{{ req.comment }}</td>
                         <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
                     </tr>

@@ -91,4 +91,9 @@ class LoginForm(ModelForm):
 class Votes(models.Model):
     user = models.ForeignKey(User)
     rate = models.PositiveSmallIntegerField()
+    comment = models.CharField(max_length=1000, blank=True)
     voted_user = models.ForeignKey(User, related_name='Voter')
+    pub_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = (("user", "voted_user"),)
