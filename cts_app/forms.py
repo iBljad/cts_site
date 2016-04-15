@@ -7,6 +7,7 @@ class GamesDD(forms.Form):
     platform = forms.ChoiceField(widget=forms.HiddenInput())
     nickname = forms.CharField(widget=forms.HiddenInput())
     comment = forms.CharField(max_length=280, widget=forms.Textarea(), initial='')
+    active = forms.BooleanField(initial=True, widget=forms.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         self.nickname = kwargs.pop('user')

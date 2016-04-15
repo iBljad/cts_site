@@ -9,11 +9,11 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth import logout, authenticate, login
-from django.db.models import Avg
+from django.db.models import Avg, Count
 
 
 def index(request, message=None):
-    reqs = Req.objects.order_by('-pub_date')[:15]
+    reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
     platforms = Platform.objects.all()
     message = message
 
@@ -41,7 +41,7 @@ def apply(request):
         GamesDDForm.full_clean(f)
 
         try:
-            ttt = Req.objects.get(game=request.POST['game'], platform=request.POST['platform'],
+            ttt = Req.objects.get(active=True, game=request.POST['game'], platform=request.POST['platform'],
                                   nickname=request.user,
                                   pub_date__gte=timezone.now() - timedelta(days=1))
             # return HttpResponse('Entry is duplicate, please try again...')
@@ -75,28 +75,28 @@ def result(request, error=''):
     form = SearchForm()
     if request.method == 'POST':
         if request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'],
-                                        nickname__username__iexact=request.POST['nickname'].strip())
+            result = Req.objects.filter(active=True, game=request.POST['game'], platform=request.POST['platform'],
+                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
 
         elif request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(game=request.POST['game'], platform=request.POST['platform'])
+            result = Req.objects.filter(active=True, game=request.POST['game'], platform=request.POST['platform']).order_by('-pub_date')
 
         elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(game=request.POST['game'],
-                                        nickname__username__iexact=request.POST['nickname'].strip())
+            result = Req.objects.filter(active=True, game=request.POST['game'],
+                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
 
         elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(game=request.POST['game'])
+            result = Req.objects.filter(active=True, game=request.POST['game']).order_by('-pub_date')
 
         elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(platform=request.POST['platform'],
-                                        nickname__username__iexact=request.POST['nickname'].strip())
+            result = Req.objects.filter(active=True, platform=request.POST['platform'],
+                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
 
         elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(platform=request.POST['platform'])
+            result = Req.objects.filter(active=True, platform=request.POST['platform']).order_by('-pub_date')
 
         elif request.POST['game'] == '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(nickname__username__iexact=request.POST['nickname'].strip())
+            result = Req.objects.filter(active=True, nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
 
         else:
             return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search',
@@ -108,8 +108,9 @@ def result(request, error=''):
 def quicksearch(request):
     if request.method == 'POST':
         result = Req.objects.filter(
-            Q(game__game__icontains=request.POST['query']) | Q(platform__platform__icontains=request.POST['query']) | Q(
-                nickname__username__icontains=request.POST['query'].strip()))
+            Q(active=True, game__game__icontains=request.POST['query']) |
+            Q(active=True, platform__platform__icontains=request.POST['query']) |
+            Q(active=True, nickname__username__icontains=request.POST['query'].strip()))
 
     return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
 
@@ -189,12 +190,21 @@ def profile(request, user):
 
     form = UserVote(user=user, voted_user=request.user)
     votes = Votes.objects.filter(user=user).order_by('-pub_date')
+
+    
+    platforms = Platform.objects.select_related('Req').filter(req__nickname=user).values('platform').annotate(count=Count('platform')).order_by('-count')
+    
+    games = Game.objects.select_related('Req').filter(req__nickname=user).values('game').annotate(count=Count('game')).order_by('-count')
+
+    reqs = Req.objects.filter(active=True, nickname=user.id).order_by('-pub_date')[:15]
+
     rating = Votes.objects.filter(user=user).aggregate(Avg('rate'))['rate__avg']
 
-    reqs = Req.objects.filter(nickname=user.id).order_by('-pub_date')[:15]
+    
 
-    return render(request, 'cts_app/profile.html', {'nbar': 'Profile', 'user1': user, 'forms': form, 'votes': votes,
-                                                    'rating': rating, 'reqs': reqs})
+
+    return render(request, 'cts_app/profile.html', {'nbar': 'profile', 'user1': user, 'forms': form, 'votes': votes,
+                                                    'rating': rating, 'reqs': reqs, 'platforms': platforms, 'games': games})
 
 
 def vote(request):
@@ -221,5 +231,20 @@ def vote(request):
 
 def reqdel(request, req_id):
     if request.user.username == Req.objects.get(id=req_id).nickname.__str__():
-        Req.objects.get(id=req_id).delete()
+        Req.objects.filter(id=req_id).update(active=False)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def top(request, entity):
+	# platforms = Platform.objects.select_related('Req').filter(req__nickname=user).values('platform').annotate(count=Count('platform')).order_by('-count')
+    
+ #    games = Game.objects.select_related('Req').filter(req__nickname=user).values('game').annotate(count=Count('game')).order_by('-count')
+
+    if entity == 'platform':
+    	result = Platform.objects.select_related('Req').filter(req__nickname__gte=0).values('platform').annotate(count=Count('platform')).order_by('-count')[:10]
+
+    elif entity == 'game':
+    	result = Game.objects.select_related('Req').filter(req__nickname__gte=0).values('game').annotate(count=Count('game')).order_by('-count')[:10]
+    elif entity == 'user':
+    	result = User.objects.select_related('Req').filter(req__nickname__gte=0).values('username').annotate(count=Count('username')).order_by('-count')[:10]
+    return render(request, 'cts_app/tops.html', {'nbar': 'tops', 'entity': entity, 'result': result})
+

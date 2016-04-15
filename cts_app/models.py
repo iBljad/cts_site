@@ -34,6 +34,7 @@ class Req(models.Model):
     nickname = models.ForeignKey(User)
     comment = models.CharField(max_length=280, blank=True)
     pub_date = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.pub_date.__str__()
