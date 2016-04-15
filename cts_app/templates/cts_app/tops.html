@@ -1,0 +1,40 @@
+{% extends 'cts_app/base.html' %}
+{% block title %}TOP-10{% endblock title %}
+{% block content %}
+
+Top-10 {{ entity }}s 
+    {% if result %}
+        <div class="panel panel-default">
+            <table align="center"
+                   class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
+
+                <thead>
+                <tr>
+                    <th class="col-md-1">{{ entity|title }}</th>
+                    <th class="col-md-1">Requests total</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for result0 in result %}
+                    <tr>
+                        {% if entity == 'game'%}
+                            <td class="col-md-1">{{ result0.game }}</td>
+                        {% elif entity == 'platform'%}
+                            <td class="col-md-1">{{ result0.platform }}</td>
+                        {% elif entity == 'user'%}
+                            <td class="col-md-1">{{ result0.username }}</td>
+                        {% endif %}
+
+                        <td class="col-md-1">{{ result0.count }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Top are unavailable.</p>
+    {% endif %}
+
+{% endblock content %}
+
