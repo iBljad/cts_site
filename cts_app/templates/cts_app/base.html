@@ -107,32 +107,32 @@
             </li>
             <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search for
                 teammate</a></li>
-            <li class="{% if nbar == 'profile' %}active{% endif %}"><a href="{% url 'cts_app:profile' user.username %}">Profiles</a></li>
-
+            <li class="{% if nbar == 'profile' %}active{% endif %}">
+                <a href= {% if user.is_authenticated %} "{% url 'cts_app:profile' user.username %}" {% endif %}>Profiles</a>
+            </li>
             <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-              Tops <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="{% url 'cts_app:top' 'game' %}">Top games</a></li>
-              <li><a href="{% url 'cts_app:top' 'platform' %}">Top platforms</a></li>
-              <li><a href="{% url 'cts_app:top' 'user' %}">Top users</a></li>
-              <li class="divider"></li>
-              <li><a href="#">Separated link</a></li>
-            </ul>
-          </li>
-
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    Tops <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'cts_app:top' 'game' %}">Top games</a></li>
+                    <li><a href="{% url 'cts_app:top' 'platform' %}">Top platforms</a></li>
+                    <li><a href="{% url 'cts_app:top' 'user' %}">Top users</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                </ul>
+            </li>
 
 
             <form action={% url 'cts_app:quicksearch' %} class="navbar-form navbar-right input-sm
-            " role="form" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
-            </div>
-            <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
-                    data-placement="bottom">Search
-            </button>
+                  role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
+                </div>
+                <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
+                        data-placement="bottom">Search
+                </button>
             </form>
 
             {% if user.is_authenticated %}

@@ -1,24 +1,26 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import Req, Platform, Game, Link, GamesDDForm, SearchFormModel, RegisterForm, LoginForm, Votes
-from .forms import GamesDD, SearchForm, UserVote
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from datetime import timedelta
-from django.utils import timezone
-from django.db.models import Q
-from django.contrib.auth.models import User, Permission
+
+from django.contrib import messages
 from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth.models import User, Permission
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.db.models import Avg, Count
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render
+from django.utils import timezone
+
+from .forms import GamesDD, SearchForm, UserVote
+from .models import Req, Platform, Game, Link, GamesDDForm, RegisterForm, LoginForm, Votes
 
 
-def index(request, message=None):
+def index(request):
     reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
     platforms = Platform.objects.all()
-    message = message
 
     return render(request, 'cts_app/index.html',
-                  {'platforms': platforms, 'reqs': reqs, 'nbar': 'home', 'message': message})
+                  {'platforms': platforms, 'reqs': reqs, 'nbar': 'home'})
 
 
 def create(request, platform_id, error=''):
@@ -45,10 +47,8 @@ def apply(request):
                                   nickname=request.user,
                                   pub_date__gte=timezone.now() - timedelta(days=1))
             # return HttpResponse('Entry is duplicate, please try again...')
-            return HttpResponseRedirect(
-                reverse('cts_app:create_err', kwargs={'platform_id': request.POST['platform'],
-                                                      'error': 'Request with the same platform, game and nickname already exist'})
-            )
+            messages.warning(request, 'Request with the same platform, game and nickname already exist')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
         except Req.DoesNotExist:
             try:
@@ -57,12 +57,8 @@ def apply(request):
                 return HttpResponse(e.message_dict)
 
             else:
-                return index(request, message='Your request has been succesfully posted')
-
-                # if request.method == 'POST':
-                # 	f = GamesDDForm(request.POST)
-                # 	new_req =f.save()
-                # return HttpResponseRedirect(reverse('cts_app:index'))
+                messages.success(request, 'Your request was successfully posted')
+                return HttpResponseRedirect(reverse('cts_app:index'))
 
 
 def search(request):
@@ -76,31 +72,37 @@ def result(request, error=''):
     if request.method == 'POST':
         if request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
             result = Req.objects.filter(active=True, game=request.POST['game'], platform=request.POST['platform'],
-                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
+                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+                '-pub_date')
 
         elif request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(active=True, game=request.POST['game'], platform=request.POST['platform']).order_by('-pub_date')
+            result = Req.objects.filter(active=True, game=request.POST['game'],
+                                        platform=request.POST['platform']).order_by('-pub_date')
 
         elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
             result = Req.objects.filter(active=True, game=request.POST['game'],
-                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
+                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+                '-pub_date')
 
         elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() == '':
             result = Req.objects.filter(active=True, game=request.POST['game']).order_by('-pub_date')
 
         elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
             result = Req.objects.filter(active=True, platform=request.POST['platform'],
-                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
+                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+                '-pub_date')
 
         elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
             result = Req.objects.filter(active=True, platform=request.POST['platform']).order_by('-pub_date')
 
         elif request.POST['game'] == '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(active=True, nickname__username__iexact=request.POST['nickname'].strip()).order_by('-pub_date')
+            result = Req.objects.filter(active=True,
+                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+                '-pub_date')
 
         else:
-            return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search',
-                                                           'error': 'Please select at least one field to seacrh'})
+            messages.warning(request, 'Please select at least one field to search')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
     return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
 
@@ -142,19 +144,22 @@ def register(request):
                 password = request.POST['password']
                 user = authenticate(username=username, password=password)
                 login(request, user)
-                return index(request, message='You were succesfully registered, thanks!')
+                messages.success(request, 'You were successfully registered, thanks!')
+                return HttpResponseRedirect(reverse('cts_app:index'))
 
         else:
             return render(request, 'cts_app/login.html',
                           {'nbar': 'Log in/register', 'forms': form, 'forms2': LoginForm()})
     else:
-        return index(request, message='Oops, something went wrong')
+        messages.error(request, 'Oops, something went wrong')
+        return HttpResponseRedirect(reverse('cts_app:index'))
 
 
 def logout_view(request):
     logout(request)
     # Redirect to a success page.
-    return index(request, message='You were succesfully logged out')
+    messages.success(request, 'You were successfully logged out')
+    return HttpResponseRedirect(reverse('cts_app:index'))
 
 
 def login_page(request):
@@ -169,7 +174,8 @@ def login_view(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return index(request, message='You were succesfully logged in')
+            messages.success(request, 'You were successfully logged in')
+            return HttpResponseRedirect(reverse('cts_app:index'))
         else:
             # Return a 'disabled account' error message
             return render(request, 'cts_app/login.html',
@@ -191,20 +197,19 @@ def profile(request, user):
     form = UserVote(user=user, voted_user=request.user)
     votes = Votes.objects.filter(user=user).order_by('-pub_date')
 
-    
-    platforms = Platform.objects.select_related('Req').filter(req__nickname=user).values('platform').annotate(count=Count('platform')).order_by('-count')
-    
-    games = Game.objects.select_related('Req').filter(req__nickname=user).values('game').annotate(count=Count('game')).order_by('-count')
+    platforms = Platform.objects.select_related('Req').filter(req__nickname=user).values('platform').annotate(
+        count=Count('platform')).order_by('-count')
+
+    games = Game.objects.select_related('Req').filter(req__nickname=user).values('game').annotate(
+        count=Count('game')).order_by('-count')
 
     reqs = Req.objects.filter(active=True, nickname=user.id).order_by('-pub_date')[:15]
 
     rating = Votes.objects.filter(user=user).aggregate(Avg('rate'))['rate__avg']
 
-    
-
-
     return render(request, 'cts_app/profile.html', {'nbar': 'profile', 'user1': user, 'forms': form, 'votes': votes,
-                                                    'rating': rating, 'reqs': reqs, 'platforms': platforms, 'games': games})
+                                                    'rating': rating, 'reqs': reqs, 'platforms': platforms,
+                                                    'games': games})
 
 
 def vote(request):
@@ -234,17 +239,16 @@ def reqdel(request, req_id):
         Req.objects.filter(id=req_id).update(active=False)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-def top(request, entity):
-	# platforms = Platform.objects.select_related('Req').filter(req__nickname=user).values('platform').annotate(count=Count('platform')).order_by('-count')
-    
- #    games = Game.objects.select_related('Req').filter(req__nickname=user).values('game').annotate(count=Count('game')).order_by('-count')
 
+def top(request, entity):
     if entity == 'platform':
-    	result = Platform.objects.select_related('Req').filter(req__nickname__gte=0).values('platform').annotate(count=Count('platform')).order_by('-count')[:10]
+        result = Platform.objects.select_related('Req').filter(req__nickname__gte=0).values('platform').annotate(
+            count=Count('platform')).order_by('-count')[:10]
 
     elif entity == 'game':
-    	result = Game.objects.select_related('Req').filter(req__nickname__gte=0).values('game').annotate(count=Count('game')).order_by('-count')[:10]
+        result = Game.objects.select_related('Req').filter(req__nickname__gte=0).values('game').annotate(
+            count=Count('game')).order_by('-count')[:10]
     elif entity == 'user':
-    	result = User.objects.select_related('Req').filter(req__nickname__gte=0).values('username').annotate(count=Count('username')).order_by('-count')[:10]
+        result = User.objects.select_related('Req').filter(req__nickname__gte=0).values('username').annotate(
+            count=Count('username')).order_by('-count')[:10]
     return render(request, 'cts_app/tops.html', {'nbar': 'tops', 'entity': entity, 'result': result})
-

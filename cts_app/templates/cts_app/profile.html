@@ -1,11 +1,11 @@
 {% extends 'cts_app/base.html' %}
 {% block title %}<b>{{ user1.username }}</b>'s profile. {% if rating %}
-            User rating is <b>{{ rating|floatformat:-2 }}</b>.
-        {% endif %}
+    User rating is <b>{{ rating|floatformat:-2 }}</b>.
+{% endif %}
 
-        {% if user.is_authenticated and user.username != user1.username %}
-            <a href="#" data-toggle="modal" data-target="#RateModal">Rate this user</a>
-        {% endif %}{% endblock %}
+    {% if user.is_authenticated and user.username != user1.username %}
+        <a href="#" data-toggle="modal" data-target="#RateModal">Rate this user</a>
+    {% endif %}{% endblock %}
 {% block content %}
 
     <!-- Modal -->
@@ -76,143 +76,139 @@
         </div>
     </div>
 
-    {% if message %}
-        <div class="alert alert-dismissible alert-success">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{ message }}
-        </div>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dismissible alert-{{ message.level_tag }}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
     {% endif %}
-
 
 
 
     <!-- START -->
     <div class="btn-group btn-group-justified">
-      <a href="#Profile" class="btn btn-default" data-toggle="tab" aria-expanded="true">Profile</a>
-      <a href="#Requests" class="btn btn-default" data-toggle="tab" aria-expanded="Requests">Requests</a>
-      <a href="#Ratings" class="btn btn-default" data-toggle="tab" aria-expanded="Ratings">Ratings</a>
+        <a href="#Profile" class="btn btn-default" data-toggle="tab" aria-expanded="true">Profile</a>
+        <a href="#Requests" class="btn btn-default" data-toggle="tab" aria-expanded="Requests">Requests</a>
+        <a href="#Ratings" class="btn btn-default" data-toggle="tab" aria-expanded="Ratings">Ratings</a>
     </div>
-<!--     <ul class="nav nav-pills">
-      <li class="active"><a href="#Profile" data-toggle="tab" aria-expanded="true">Profile</a></li>
-      <li class=""><a href="#Requests" data-toggle="tab" aria-expanded="Requests">Requests</a></li>
-      <li class=""><a href="#Ratings" data-toggle="tab" aria-expanded="Ratings">Ratings</a></li>
-    </ul> -->
+    <!--     <ul class="nav nav-pills">
+          <li class="active"><a href="#Profile" data-toggle="tab" aria-expanded="true">Profile</a></li>
+          <li class=""><a href="#Requests" data-toggle="tab" aria-expanded="Requests">Requests</a></li>
+          <li class=""><a href="#Ratings" data-toggle="tab" aria-expanded="Ratings">Ratings</a></li>
+        </ul> -->
     <div id="myTabContent" class="tab-content">
-      <div class="tab-pane fade active in" id="Profile">
-        
+        <div class="tab-pane fade active in" id="Profile">
 
 
+            {% if platforms %}
+                Preferred platforms:
+                <ul>
+                    {% for platform in platforms %}
+                        <li>{{ platform.platform }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
-        {% if platforms %}
-        Peferred platforms:
-            <ul>
-            {% for platform in platforms %}
-                <li>{{platform.platform}}</li>
-            {% endfor %}    
-            </ul>
-        {% endif %}
+            {% if games %}
+                Preferred games:
+                <ul>
+                    {% for game in games %}
+                        <li>{{ game.game }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="tab-pane fade" id="Requests">
+            Users latest requests
+            {% if reqs %}
+                <div class="panel panel-default">
+                    <table align="center"
+                           class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
 
-        {% if games %}
-        Peferred games:
-            <ul>
-            {% for game in games %}
-                <li>{{game.game}}</li>
-            {% endfor %}    
-            </ul>
-        {% endif %}
-        
-        
-
-        
-
-      </div>
-      <div class="tab-pane fade" id="Requests">
-        Users latest requests
-        {% if reqs %}
-            <div class="panel panel-default">
-                <table align="center"
-                       class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
-
-                    <thead>
-                    <tr>
-                        <th class="col-md-2">Game</th>
-                        <th class="col-md-1">Platform</th>
-                        <th class="col-md-1">Nickname</th>
-                        <th class="col-md-5">Comment</th>
-                        <th class="col-md-2">Apply date</th>
-
-                        {% if user.is_authenticated and user.username == user1.username %}
-                            <th class="col-md-2">Options</th>
-                        {% endif %}
-
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for req in reqs %}
+                        <thead>
                         <tr>
-                            <td class="col-md-2">{{ req.game }}</td>
-                            <td class="col-md-1">{{ req.platform }}</td>
-                            <td class="col-md-1"><a href="{% url 'cts_app:profile' req.nickname %}">{{ req.nickname }}</a>
-                            </td>
-                            <td style="word-break:break-all;" class="col-md-5">{{ req.comment }}</td>
-                            <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
+                            <th class="col-md-2">Game</th>
+                            <th class="col-md-1">Platform</th>
+                            <th class="col-md-1">Nickname</th>
+                            <th class="col-md-5">Comment</th>
+                            <th class="col-md-2">Apply date</th>
 
                             {% if user.is_authenticated and user.username == user1.username %}
-                                <td class="col-md-2"><a href="{% url 'cts_app:reqdel' req.id %}">Delete</a></td>
+                                <th class="col-md-2">Options</th>
                             {% endif %}
 
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <p>No reqs are available.</p>
-        {% endif %}
-      </div>
-      <div class="tab-pane fade" id="Ratings">
-        User rates
-        {% if votes %}
-            <div class="panel panel-default">
-                <table align="center"
-                       class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
+                        </thead>
 
-                    <thead>
-                    <tr>
-                        <th class="col-md-1">Rate</th>
-                        <th class="col-md-5">Comment</th>
-                        <th class="col-md-2">Date</th>
-                        <th class="col-md-2">Voter</th>
-                    </tr>
-                    </thead>
+                        <tbody>
+                        {% for req in reqs %}
+                            <tr>
+                                <td class="col-md-2">{{ req.game }}</td>
+                                <td class="col-md-1">{{ req.platform }}</td>
+                                <td class="col-md-1"><a
+                                        href="{% url 'cts_app:profile' req.nickname %}">{{ req.nickname }}</a>
+                                </td>
+                                <td style="word-break:break-all;" class="col-md-5">{{ req.comment }}</td>
+                                <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
 
-                    <tbody>
-                    {% for vote in votes %}
+                                {% if user.is_authenticated and user.username == user1.username %}
+                                    <td class="col-md-2"><a href="{% url 'cts_app:reqdel' req.id %}">Delete</a></td>
+                                {% endif %}
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No reqs are available.</p>
+            {% endif %}
+        </div>
+        <div class="tab-pane fade" id="Ratings">
+            User rates
+            {% if votes %}
+                <div class="panel panel-default">
+                    <table align="center"
+                           class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
+
+                        <thead>
                         <tr>
-                            <td class="col-md-1">{{ vote.rate }}</td>
-                            <td style="word-break:break-all" class="col-md-5">{{ vote.comment }}</td>
-                            <td class="col-md-2">{{ vote.pub_date|date:"H:i, d.m.y" }}</td>
-                            <td class="col-md-2"><a
-                                    href="{% url 'cts_app:profile' vote.voted_user %}">{{ vote.voted_user }}</a></td>
+                            <th class="col-md-1">Rate</th>
+                            <th class="col-md-5">Comment</th>
+                            <th class="col-md-2">Date</th>
+                            <th class="col-md-2">Voter</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <p>No votes are available.</p>
-        {% endif %}
-      </div>
+                        </thead>
+
+                        <tbody>
+                        {% for vote in votes %}
+                            <tr>
+                                <td class="col-md-1">{{ vote.rate }}</td>
+                                <td style="word-break:break-all" class="col-md-5">{{ vote.comment }}</td>
+                                <td class="col-md-2">{{ vote.pub_date|date:"H:i, d.m.y" }}</td>
+                                <td class="col-md-2"><a
+                                        href="{% url 'cts_app:profile' vote.voted_user %}">{{ vote.voted_user }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No votes are available.</p>
+            {% endif %}
+        </div>
     </div>
 
 
 
 
-    
 
 
-       
+
+
 
 {% endblock content %}
 

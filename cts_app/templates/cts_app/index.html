@@ -2,12 +2,21 @@
 {% block title %}Latest requests list{% endblock %}
 {% block content %}
 
-{%if message %}
-    <div class="alert alert-dismissible alert-success">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      {{message}}
-    </div>
-{% endif %}
+    {#    {% if message %}#}
+    {#        <div class="alert alert-dismissible alert-success">#}
+    {#        <button type="button" class="close" data-dismiss="alert">&times;</button>#}
+    {#        {{ message }}#}
+    {##}
+    {#    {% endif %}#}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dismissible alert-{{ message.level_tag }}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
 
     {% if reqs %}
@@ -30,25 +39,26 @@
                     <tr>
                         <td class="col-md-2">{{ req.game }}</td>
                         <td class="col-md-1">{{ req.platform }}</td>
-                        <td class="col-md-1"><a href="{% url 'cts_app:profile' req.nickname %}">{{ req.nickname }}</a></td>
+                        <td class="col-md-1"><a href="{% url 'cts_app:profile' req.nickname %}">{{ req.nickname }}</a>
+                        </td>
                         <td style="word-break:break-all;" class="col-md-5">{{ req.comment }}</td>
                         <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
-                        <td class="col-md-2">{% lorem 10 w random%}</td>
-                        <td class="col-md-1">gameboy advance blah</td>
-                        <td class="col-md-1">nicknamenicknamenick</a></td>
-                        <td style="word-break:break-all;" class="col-md-5">{% lorem 40 w %}</td>
-                        <td class="col-md-2">13:07, 25.03.16</td>
-                    </tr>
+                    <td class="col-md-2">{% lorem 10 w random %}</td>
+                    <td class="col-md-1">gameboy advance blah</td>
+                    <td class="col-md-1">nicknamenicknamenick</a></td>
+                    <td style="word-break:break-all;" class="col-md-5">{% lorem 40 w %}</td>
+                    <td class="col-md-2">13:07, 25.03.16</td>
+                </tr>
                 </tbody>
             </table>
         </div>
     {% else %}
         <p>No reqs are available.</p>
     {% endif %}
-<!-- {% for platform in platforms %}
+    <!-- {% for platform in platforms %}
 <a href="create/{{ platform.id }}">{{ platform.platform }}</a><br>
 {% endfor %}
  -->
