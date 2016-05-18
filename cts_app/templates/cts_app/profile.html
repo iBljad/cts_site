@@ -76,17 +76,6 @@
         </div>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-dismissible alert-{{ message.level_tag }}">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
-
-
     <!-- START -->
     <div class="btn-group btn-group-justified">
         <a href="#Profile" class="btn btn-default" data-toggle="tab" aria-expanded="true">Profile</a>

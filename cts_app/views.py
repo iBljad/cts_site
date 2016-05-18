@@ -16,11 +16,12 @@ from .models import Req, Platform, Game, Link, GamesDDForm, RegisterForm, LoginF
 
 
 def index(request):
-    reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
-    platforms = Platform.objects.all()
+    # reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
+    # platforms = Platform.objects.all()
+    messages.info(request, 'Test')
 
     return render(request, 'cts_app/index.html',
-                  {'platforms': platforms, 'reqs': reqs, 'nbar': 'home'})
+                  {''' 'platforms': platforms,  'reqs': reqs,''' 'nbar': 'home'})
 
 
 def create(request, platform_id, error=''):

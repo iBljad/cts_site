@@ -148,6 +148,26 @@
         <div class="panel panel-default">
             <div class="panel-heading">{% block title %}{% endblock %}</div>
             <div class="panel-body">
+                {% if messages %}
+
+
+                    <div class="row row-centered">
+                        <div class="col-sm-3">
+                        </div>
+                        {% for message in messages %}
+                            <div class="alert alert-dismissible alert-{{ message.level_tag }} col-sm-6">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                        <div class="col-sm-3">
+                        </div>
+
+                    </div>
+
+
+                {% endif %}
+
                 {% block content %}
                 {% endblock %}
             </div>

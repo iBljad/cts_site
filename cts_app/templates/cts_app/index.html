@@ -9,14 +9,7 @@
     {##}
     {#    {% endif %}#}
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-dismissible alert-{{ message.level_tag }}">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+
 
 
     {% if reqs %}
