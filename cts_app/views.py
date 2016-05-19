@@ -263,9 +263,12 @@ def contact(request):
 def send_email(request):
     form = ContactForm(request.POST)
     subject = '[CTS] ' + request.POST['subject']
-    message = request.POST['sender'] + ': \n' + request.POST['message']
-    from_email = request.POST['sender']
-    if subject and message and from_email:
+    from_email = request.POST['email']
+    if from_email:
+        message = request.POST['email'] + ': \n' + request.POST['message']
+    else:
+        message = request.POST['message']
+    if subject and message:
         try:
             send_mail(subject, message, 'goplaycoop@yandex.ru', ['drakonmail@gmail.com'], fail_silently=False)
         except BadHeaderError:

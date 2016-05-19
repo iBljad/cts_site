@@ -65,7 +65,7 @@ class UserVote(forms.Form):
 class ContactForm(forms.Form):
     subject = forms.CharField(max_length=100)
     message = forms.CharField(widget=forms.Textarea)
-    sender = forms.EmailField()
+    email = forms.EmailField(required=False)
 
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
