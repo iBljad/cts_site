@@ -121,6 +121,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True
+EMAIL_PORT = 465
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_HOST_USER = 'goplaycoop@yandex.ru'
+EMAIL_HOST_PASSWORD = 'Xapporat1'
+EMAIL_TIMEOUT = 180
+
 
 try:
     from .local_settings import *

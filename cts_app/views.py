@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from django.core.mail import send_mail, BadHeaderError
 from django.contrib import messages
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User, Permission
@@ -10,12 +10,12 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.utils import timezone
-
-from .forms import GamesDD, SearchForm, UserVote
+from .forms import GamesDD, SearchForm, UserVote, ContactForm
 from .models import Req, Platform, Game, Link, GamesDDForm, RegisterForm, LoginForm, Votes
 
 
 def index(request):
+    form = ContactForm
     # reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
     # platforms = Platform.objects.all()
     messages.debug(request, 'Test')
@@ -24,17 +24,17 @@ def index(request):
                   {''' 'platforms': platforms,  'reqs': reqs,''' 'nbar': 'home'})
 
 
-def create(request, platform_id, error=''):
+def create(request):
     try:
+        platform_id = request.GET['platform_id']
         platform = Platform.objects.get(pk=platform_id)
         link = Link.objects.filter(platform=platform).values('game')
         games = Game.objects.filter(id__in=link)
         form = GamesDD(user=request.user, games=games, platform=platform)
-        error = error
     except Platform.DoesNotExist:
         raise Http404("Error occurred")
 
-    return render(request, 'cts_app/create.html', {'games': games, 'forms': form, 'error': error, 'nbar': 'create'})
+    return render(request, 'cts_app/create.html', {'games': games, 'forms': form, 'nbar': 'create'})
 
 
 def apply(request):
@@ -48,7 +48,7 @@ def apply(request):
                                   nickname=request.user,
                                   pub_date__gte=timezone.now() - timedelta(days=1))
             # return HttpResponse('Entry is duplicate, please try again...')
-            messages.warning(request, 'Request with the same platform, game and nickname already exist')
+            messages.warning(request, 'Request with the same platform, game and nickname already exists')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
         except Req.DoesNotExist:
@@ -129,7 +129,7 @@ def register(request):
         if form.is_valid():
             try:
                 ttt = User.objects.get(email=form.cleaned_data['email'])
-                form.add_error('email', 'This email already exists')
+                form.add_error('email', 'Email already exists')
                 return render(request, 'cts_app/login.html',
                               {'nbar': 'Log in/register', 'forms': form, 'forms2': LoginForm()})
             except User.DoesNotExist:
@@ -179,14 +179,14 @@ def login_view(request):
             return HttpResponseRedirect(reverse('cts_app:index'))
         else:
             # Return a 'disabled account' error message
+            messages.error(request, 'Your account was disabled')
             return render(request, 'cts_app/login.html',
-                          {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm(),
-                           'error2': 'Your account was disabled'})
-            # Return an 'invalid login' error message.
+                          {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm()})
+            # TODO Return an 'invalid login' error message.
     else:
+        messages.error(request, 'Invalid login or password')
         return render(request, 'cts_app/login.html',
-                      {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm(),
-                       'error2': 'Invalid login or password'})
+                      {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm()})
 
 
 def profile(request, user):
@@ -253,3 +253,24 @@ def top(request, entity):
         result = User.objects.select_related('Req').filter(req__nickname__gte=0).values('username').annotate(
             count=Count('username')).order_by('-count')[:10]
     return render(request, 'cts_app/tops.html', {'nbar': 'tops', 'entity': entity, 'result': result})
+
+
+def contact(request):
+    form = ContactForm
+    return render(request, 'cts_app/contact.html', {'nbar': 'contact', 'forms': form})
+
+
+def send_email(request):
+    form = ContactForm(request.POST)
+    subject = '[CTS] ' + request.POST['subject']
+    message = request.POST['sender'] + ': \n' + request.POST['message']
+    from_email = request.POST['sender']
+    if subject and message and from_email:
+        try:
+            send_mail(subject, message, 'goplaycoop@yandex.ru', ['drakonmail@gmail.com'], fail_silently=False)
+        except BadHeaderError:
+            return HttpResponse('Invalid header found.')
+        messages.success(request, 'Your message was sent, thanks!')
+        return HttpResponseRedirect(reverse('cts_app:index'))
+    else:
+        return render(request, 'cts_app/contact.html', {'nbar': 'contact', 'forms': form})
