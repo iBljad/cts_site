@@ -107,7 +107,8 @@
 
     <div class="col-md-8">
 
-        <ul class="nav nav-pills">
+        {#    OLD#}
+        <ul class="nav nav-pills hidden-xs">
             <li class="{% if nbar == 'home' %}active{% endif %}"><a href="{% url 'cts_app:index' %}">Home</a></li>
             <li class="{% if nbar == 'create' %}active{% endif %}"><!-- Trigger the modal with a button -->
                 <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
@@ -124,8 +125,6 @@
                     <li><a href="{% url 'cts_app:top' 'game' %}">Top games</a></li>
                     <li><a href="{% url 'cts_app:top' 'platform' %}">Top platforms</a></li>
                     <li><a href="{% url 'cts_app:top' 'user' %}">Top users</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Separated link</a></li>
                 </ul>
             </li>
             <li class="{% if nbar == 'contact' %}active{% endif %}"><!-- Trigger the contact modal with a button -->
@@ -154,6 +153,73 @@
         </ul>
 
 
+        {#        SS#}
+
+        <nav class="navbar navbar-inverse visible-xs">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Go Play Coop</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li class="{% if nbar == 'home' %}active{% endif %}"><a
+                                href="{% url 'cts_app:index' %}">Home</a></li>
+                        <li class="{% if nbar == 'create' %}active{% endif %}"><!-- Trigger the modal with a button -->
+                            <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
+                        </li>
+                        <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a>
+                        </li>
+                        <li class="{% if nbar == 'profile' %}active{% endif %}">
+                            <a href= {% if user.is_authenticated %} "{% url 'cts_app:profile' user.username %}" {% endif %}>Profiles</a>
+                        </li>
+                        <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                                Tops <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'cts_app:top' 'game' %}">Top games</a></li>
+                                <li><a href="{% url 'cts_app:top' 'platform' %}">Top platforms</a></li>
+                                <li><a href="{% url 'cts_app:top' 'user' %}">Top users</a></li>
+                            </ul>
+                        </li>
+                        <li class="{% if nbar == 'contact' %}active{% endif %}">
+                            <a href="{% url 'cts_app:contact' %}">Feedback</a>
+                        </li>
+
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'cts_app:logout' %}">Log out</a></li>
+                        {% else %}
+                            <li class="{% if nbar == 'Log in/register' %}active{% endif %}"><a
+                                    href="{% url 'cts_app:login_page' %}">Log in</a></li>
+                        {% endif %}
+
+                        <li>
+                            <form action={% url 'cts_app:quicksearch' %} class="navbar-form" role="form" method="post" >
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="text" class="form-control input-sm" placeholder="Quick search"
+                                       name="query">
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
+                                    data-placement="bottom">Search
+                            </button>
+                            </form>
+                        </li>
+
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+
+        {#        FF#}
+
         <div class="panel panel-default">
             <div class="panel-heading">{% block title %}{% endblock %}</div>
             <div class="panel-body">
@@ -179,6 +245,7 @@
 
                 {% block content %}
                 {% endblock %}
+
             </div>
             <div class="panel-footer">
                 <small>
