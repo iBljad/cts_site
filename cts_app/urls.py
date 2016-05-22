@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^vote$', view=views.vote, name='vote'),
     url(r'^reqdel/(?P<req_id>[0-9]+)$', view=views.reqdel, name='reqdel'),
     url(r'^top/(?P<entity>.*)$', view=views.top, name='top'),
-    url(r'^contact$', view=views.contact, name='contact'),
+    url(r'^feedback', view=views.contact, name='contact'),
     url(r'^send_email$', view=views.send_email, name='send_email'),
 
 ]

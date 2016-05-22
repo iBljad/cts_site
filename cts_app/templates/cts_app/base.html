@@ -1,11 +1,12 @@
 <html>
 <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cyborg/bootstrap.min.css">
     <link rel="icon" type="image/png" href="https://dl.dropboxusercontent.com/u/31131306/CTSb.png" sizes="32x32"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cyborg/bootstrap.min.css">
-    <script async src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script async src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
@@ -144,10 +145,10 @@
             </form>
 
             {% if user.is_authenticated %}
-                <li class="navbar-right"><a href="{% url 'cts_app:logout' %}">Log out</a></li>
+                <li class="navbar-right"><a href="{% url 'cts_app:logout' %}?next={{ request.get_full_path|urlencode }}">Log out</a></li>
             {% else %}
                 <li class="{% if nbar == 'Log in/register' %}active{% endif %} navbar-right"><a
-                        href="{% url 'cts_app:login_page' %}">Log in</a></li>
+                        href="{% url 'cts_app:login_page' %}?next={{ request.get_full_path|urlencode }}">Log in</a></li>
             {% endif %}
 
         </ul>
@@ -163,7 +164,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Go Play Coop</a>
+                    <a class="navbar-brand" href="/">Go Play Coop</a>
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
@@ -174,9 +175,11 @@
                         </li>
                         <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a>
                         </li>
-                        <li class="{% if nbar == 'profile' %}active{% endif %}">
-                            <a href= {% if user.is_authenticated %} "{% url 'cts_app:profile' user.username %}" {% endif %}>Profiles</a>
-                        </li>
+                        {% if user.is_authenticated %}
+                            <li class="{% if nbar == 'profile' %}active{% endif %}">
+                                <a href="{% url 'cts_app:profile' user.username %}">Profiles</a>
+                            </li>
+                        {% endif %}
                         <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 Tops <span class="caret"></span>
@@ -192,22 +195,23 @@
                         </li>
 
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'cts_app:logout' %}">Log out</a></li>
+                            <li><a href="{% url 'cts_app:logout' %}?next={{ request.get_full_path|urlencode }}">Log
+                                out</a></li>
                         {% else %}
                             <li class="{% if nbar == 'Log in/register' %}active{% endif %}"><a
-                                    href="{% url 'cts_app:login_page' %}">Log in</a></li>
+                                    href="{% url 'cts_app:login_page' %}?next={{ request.get_full_path|urlencode }}">Log in</a></li>
                         {% endif %}
 
                         <li>
-                            <form action={% url 'cts_app:quicksearch' %} class="navbar-form" role="form" method="post" >
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <input type="text" class="form-control input-sm" placeholder="Quick search"
-                                       name="query">
-                            </div>
-                            <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
-                                    data-placement="bottom">Search
-                            </button>
+                            <form action={% url 'cts_app:quicksearch' %} class="navbar-form" role="form" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input type="text" class="form-control input-sm" placeholder="Quick search"
+                                           name="query">
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
+                                        data-placement="bottom">Search
+                                </button>
                             </form>
                         </li>
 
@@ -273,5 +277,4 @@
 
 </body>
 </html>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cyborg/bootstrap.min.css">
 

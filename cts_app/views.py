@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Avg, Count
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from .forms import GamesDD, SearchForm, UserVote, ContactForm
 from .models import Req, Platform, Game, Link, GamesDDForm, RegisterForm, LoginForm, Votes
@@ -68,7 +68,7 @@ def search(request):
     return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search'})
 
 
-def result(request, error=''):
+def result(request):
     form = SearchForm()
     if request.method == 'POST':
         if request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
@@ -160,12 +160,13 @@ def logout_view(request):
     logout(request)
     # Redirect to a success page.
     messages.success(request, 'You were successfully logged out')
-    return HttpResponseRedirect(reverse('cts_app:index'))
+    return redirect(request.GET.get('next', 'cts_app:index'))
 
 
 def login_page(request):
+    next_page = request.GET.get('next')
     return render(request, 'cts_app/login.html',
-                  {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm()})
+                  {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': RegisterForm(), 'next': next_page})
 
 
 def login_view(request):
@@ -176,7 +177,8 @@ def login_view(request):
         if user.is_active:
             login(request, user)
             messages.success(request, 'You were successfully logged in')
-            return HttpResponseRedirect(reverse('cts_app:index'))
+            # HttpResponseRedirect(redirect_to)
+            return redirect(request.GET.get('next', 'cts_app:index'))
         else:
             # Return a 'disabled account' error message
             messages.error(request, 'Your account was disabled')
@@ -262,8 +264,14 @@ def contact(request):
 
 def send_email(request):
     form = ContactForm(request.POST)
-    subject = '[CTS] ' + request.POST['subject']
+    subject = request.POST['subject']
+    if subject:
+        subject = '[CTS] ' + subject
+    else:
+        subject = '[CTS] No subject'
+
     from_email = request.POST['email']
+
     if from_email:
         message = request.POST['email'] + ': \n' + request.POST['message']
     else:
@@ -276,4 +284,6 @@ def send_email(request):
         messages.success(request, 'Your message was sent, thanks!')
         return HttpResponseRedirect(reverse('cts_app:index'))
     else:
-        return render(request, 'cts_app/contact.html', {'nbar': 'contact', 'forms': form})
+        form.add_error('message', 'Please enter your message')
+        return HttpResponseRedirect(reverse('cts_app:contact'))
+        # HttpResponseRedirect(reverse('cts_app:contact'))
