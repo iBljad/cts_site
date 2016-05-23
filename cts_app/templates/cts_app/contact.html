@@ -1,4 +1,5 @@
 {% extends 'cts_app/base.html' %}
+{% block headtitle %}Feedback form{% endblock %}
 {% block title %}Feedback form{% endblock %}
 
 {% block content %}
@@ -8,7 +9,7 @@
     </div>
     <div class="row row-centered">
 
-        <form action={% url 'cts_app:send_email' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
+        <form action={% url 'cts_app:contact' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
             {#%cts_app:apply %#}
 
 

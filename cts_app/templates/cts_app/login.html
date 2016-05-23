@@ -1,4 +1,5 @@
 {% extends 'cts_app/base.html' %}
+{% block headtitle %}Login/register{% endblock %}
 {% block title %}Login/register{% endblock %}
 {% block content %}
 
@@ -20,15 +21,16 @@
             <div class="row row-centered">
                 {#TODO ?next=#}
                 {% if next %}
-                    <form action="{% url 'cts_app:login_view' %}?next={{ next }}" method="post" class="form-horizontal"
+                    <form action="{% url 'cts_app:login' %}?next={{ next }}" method="post" class="form-horizontal"
                           role="form">
                 {% else %}
-                    <form action="{% url 'cts_app:login_view' %}" method="post" class="form-horizontal"
+                    <form action="{% url 'cts_app:login' %}" method="post" class="form-horizontal"
                           role="form">
                 {% endif %}
                 {% csrf_token %}
 
                 {% include "cts_app/form_snippet.html" %}
+                <input type="hidden" name="action" value="login">
 
                 <div class="form-group">
                     <div class="col-sm-1 col-centered"></div>
@@ -49,11 +51,12 @@
             </div>
             <div class="row row-centered">
 
-                <form autocomplete="off" action={% url 'cts_app:register' %} method="post" class="form-horizontal"
+                <form autocomplete="off" action={% url 'cts_app:login' %} method="post" class="form-horizontal"
                       role="form">{% csrf_token %}
 
 
                     {% include "cts_app/form_snippet.html" with forms=forms2 %}
+                    <input type="hidden" name="action" value="register">
 
                     <input style="display:none" type="text" name="fakeusernameremembered"/>
                     <input style="display:none" type="password" name="fakepasswordremembered"/>

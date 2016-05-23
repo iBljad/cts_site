@@ -54,10 +54,10 @@
             border-bottom: 5px solid #2a9fd6;
         }
     </style>
-    <title>Go Play Coop
-        {% if nbar == 'home' %} — Home{% endif %}
-        {% if nbar == 'create' %} — Create Game Request{% endif %}
-        {% if nbar == 'search' %} — Search for Game Requests{% endif %}
+    <title>Go Play Coop — {% block headtitle %} {% endblock %}
+        {#        {% if nbar == 'home' %} — Home{% endif %}#}
+        {#        {% if nbar == 'create' %} — Create Game Request{% endif %}#}
+        {#        {% if nbar == 'search' %} — Search for Game Requests{% endif %}#}
     </title>
 </head>
 
@@ -115,8 +115,8 @@
                 <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
             </li>
             <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a></li>
-            <li class="{% if nbar == 'profile' %}active{% endif %}">
-                <a href= {% if user.is_authenticated %} "{% url 'cts_app:profile' user.username %}" {% endif %}>Profiles</a>
+            <li class="{% if nbar == 'profile' %}active{% endif %} {% if not user.is_authenticated %} disabled{% endif %}">
+                <a href="{% if user.is_authenticated %} {% url 'cts_app:profile' user.username %}{% else %}#" {% endif %}>Profiles</a>
             </li>
             <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
@@ -133,22 +133,22 @@
             </li>
 
 
-            <form action={% url 'cts_app:quicksearch' %} class="navbar-form navbar-right input-sm
-                  role="form" method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
-                </div>
-                <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
-                        data-placement="bottom">Search
-                </button>
+            <form action={% url 'cts_app:search' %} class="navbar-form navbar-right input-sm" role="form" method="get">
+            <div class="form-group">
+                <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
+                <input type="hidden" name="type" value="quicksearch">
+            </div>
+            <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
+                    data-placement="bottom">Search
+            </button>
             </form>
 
             {% if user.is_authenticated %}
-                <li class="navbar-right"><a href="{% url 'cts_app:logout' %}?next={{ request.get_full_path|urlencode }}">Log out</a></li>
+                <li class="navbar-right"><a
+                        href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log out</a></li>
             {% else %}
                 <li class="{% if nbar == 'Log in/register' %}active{% endif %} navbar-right"><a
-                        href="{% url 'cts_app:login_page' %}?next={{ request.get_full_path|urlencode }}">Log in</a></li>
+                        href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log in</a></li>
             {% endif %}
 
         </ul>
@@ -195,16 +195,18 @@
                         </li>
 
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'cts_app:logout' %}?next={{ request.get_full_path|urlencode }}">Log
+                            <li><a href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
                                 out</a></li>
                         {% else %}
                             <li class="{% if nbar == 'Log in/register' %}active{% endif %}"><a
-                                    href="{% url 'cts_app:login_page' %}?next={{ request.get_full_path|urlencode }}">Log in</a></li>
+                                    href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log
+                                in</a></li>
                         {% endif %}
 
                         <li>
-                            <form action={% url 'cts_app:quicksearch' %} class="navbar-form" role="form" method="post">
-                                {% csrf_token %}
+                            <form action={% url 'cts_app:search' %} class="navbar-form" role="form" method="get">
+                                <input type="hidden" name="type" value="quicksearch">
+
                                 <div class="form-group">
                                     <input type="text" class="form-control input-sm" placeholder="Quick search"
                                            name="query">

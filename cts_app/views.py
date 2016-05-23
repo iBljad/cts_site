@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.core.mail import send_mail, BadHeaderError
 from django.contrib import messages
-from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth import logout, authenticate, login as auth_login
 from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -25,29 +25,16 @@ def index(request):
 
 
 def create(request):
-    try:
-        platform_id = request.GET['platform_id']
-        platform = Platform.objects.get(pk=platform_id)
-        link = Link.objects.filter(platform=platform).values('game')
-        games = Game.objects.filter(id__in=link)
-        form = GamesDD(user=request.user, games=games, platform=platform)
-    except Platform.DoesNotExist:
-        raise Http404("Error occurred")
-
-    return render(request, 'cts_app/create.html', {'games': games, 'forms': form, 'nbar': 'create'})
-
-
-def apply(request):
     if request.method == 'POST':
 
         f = GamesDDForm(request.POST)
         GamesDDForm.full_clean(f)
 
         try:
-            ttt = Req.objects.get(active=True, game=request.POST['game'], platform=request.POST['platform'],
+            ttt = Req.objects.get(active=True, game=request.POST.get('game', ''),
+                                  platform=request.POST.get('platform', ''),
                                   nickname=request.user,
                                   pub_date__gte=timezone.now() - timedelta(days=1))
-            # return HttpResponse('Entry is duplicate, please try again...')
             messages.warning(request, 'Request with the same platform, game and nickname already exists')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -60,78 +47,114 @@ def apply(request):
             else:
                 messages.success(request, 'Your request was successfully posted')
                 return HttpResponseRedirect(reverse('cts_app:index'))
+    else:
+        try:
+            platform_id = request.GET.get('platform_id', '')
+            platform = Platform.objects.get(pk=platform_id)
+            link = Link.objects.filter(platform=platform).values('game')
+            games = Game.objects.filter(id__in=link)
+            form = GamesDD(user=request.user, games=games, platform=platform)
+        except Platform.DoesNotExist:
+            raise Http404("Error occurred")
+        return render(request, 'cts_app/create.html', {'games': games, 'forms': form, 'nbar': 'create'})
 
 
 def search(request):
-    form = SearchForm()
-
-    return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search'})
-
-
-def result(request):
-    form = SearchForm()
-    if request.method == 'POST':
-        if request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(active=True, game=request.POST['game'], platform=request.POST['platform'],
-                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+    search_type = request.GET.get('type', 'none')
+    if search_type == 'search':
+        if request.GET.get('game', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+                                                                                                           '').strip() != '':
+            result = Req.objects.filter(active=True, game=request.GET.get('game', ''),
+                                        platform=request.GET.get('platform', ''),
+                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.POST['game'] != '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(active=True, game=request.POST['game'],
-                                        platform=request.POST['platform']).order_by('-pub_date')
+        elif request.GET.get('game', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+                                                                                                             '').strip() == '':
+            result = Req.objects.filter(active=True, game=request.GET.get('game', ''),
+                                        platform=request.GET.get('platform', '')).order_by('-pub_date')
 
-        elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(active=True, game=request.POST['game'],
-                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+        elif request.GET.get('game', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
+                                                                                                             '').strip() != '':
+            result = Req.objects.filter(active=True, game=request.GET.get('game', ''),
+                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.POST['game'] != '' and request.POST['platform'] == '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(active=True, game=request.POST['game']).order_by('-pub_date')
+        elif request.GET.get('game', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
+                                                                                                             '').strip() == '':
+            result = Req.objects.filter(active=True, game=request.GET.get('game', '')).order_by('-pub_date')
 
-        elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() != '':
-            result = Req.objects.filter(active=True, platform=request.POST['platform'],
-                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+        elif request.GET.get('game', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+                                                                                                             '').strip() != '':
+            result = Req.objects.filter(active=True, platform=request.GET.get('platform', ''),
+                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.POST['game'] == '' and request.POST['platform'] != '' and request.POST['nickname'].strip() == '':
-            result = Req.objects.filter(active=True, platform=request.POST['platform']).order_by('-pub_date')
+        elif request.GET.get('game', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+                                                                                                             '').strip() == '':
+            result = Req.objects.filter(active=True, platform=request.GET.get('platform', '')).order_by('-pub_date')
 
-        elif request.POST['game'] == '' and request.POST['platform'] == '' and request.POST['nickname'].strip() != '':
+        elif request.GET.get('game', '') == '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
+                                                                                                             '').strip() != '':
             result = Req.objects.filter(active=True,
-                                        nickname__username__iexact=request.POST['nickname'].strip()).order_by(
+                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
-
         else:
             messages.warning(request, 'Please select at least one field to search')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-    return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
-
-
-def quicksearch(request):
-    if request.method == 'POST':
+        return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
+    elif search_type == 'quicksearch':
         result = Req.objects.filter(
-            Q(active=True, game__game__icontains=request.POST['query']) |
-            Q(active=True, platform__platform__icontains=request.POST['query']) |
-            Q(active=True, nickname__username__icontains=request.POST['query'].strip()))
-
-    return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
-
-
-def test1(request):
-    form = RegisterForm()
-    return render(request, 'cts_app/test1.html', {'nbar': 'search', 'forms': form})
+            Q(active=True, game__game__icontains=request.GET.get('query', '')) |
+            Q(active=True, platform__platform__icontains=request.GET.get('query', '')) |
+            Q(active=True, nickname__username__icontains=request.GET.get('query', '').strip()))
+        return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
+    else:
+        form = SearchForm()
+        return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search'})
 
 
-def register(request):
-    if request.method == 'POST':
+def login(request):
+    next_page = request.GET.get('next', 'cts_app:index')
+    if request.GET.get('action', '') == 'logout':
+        if request.user.is_authenticated():
+            logout(request)
+            messages.success(request, 'You were successfully logged out')
+            return redirect(request.GET.get('next', 'cts_app:index'))
+        else:
+            messages.warning('You are not logged in')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    elif request.POST.get('action', '') == 'login':
+        login_form = LoginForm(request.POST)
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                auth_login(request, user)
+                messages.success(request, 'You were successfully logged in')
+                # HttpResponseRedirect(redirect_to)
+                return redirect(next_page)
+            else:
+                login_form.add_error('Your account was disabled')
+                return render(request, 'cts_app/login.html',
+                              {'nbar': 'Log in/register', 'forms': login_form, 'forms2': RegisterForm(),
+                               'next': next_page})
+                # TODO Return an 'invalid login' error message.
+        else:
+            login_form.add_error(field=None, error='Invalid login or password')
+            return render(request, 'cts_app/login.html',
+                          {'nbar': 'Log in/register', 'forms': login_form, 'forms2': RegisterForm(),
+                           'next': next_page})
+    elif request.POST.get('action', '') == 'register':
         form = RegisterForm(request.POST)
         if form.is_valid():
             try:
                 ttt = User.objects.get(email=form.cleaned_data['email'])
                 form.add_error('email', 'Email already exists')
                 return render(request, 'cts_app/login.html',
-                              {'nbar': 'Log in/register', 'forms': form, 'forms2': LoginForm()})
+                              {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': form,
+                               'next': next_page})
             except User.DoesNotExist:
                 u = User.objects.create_user(username=form.cleaned_data['username'],
                                              email=form.cleaned_data['email'],
@@ -141,61 +164,47 @@ def register(request):
                 p3 = Permission.objects.get(name__icontains='Can delete req')
                 u.user_permissions.add(p1, p2, p3)
 
-                username = request.POST['username']
-                password = request.POST['password']
+                username = request.POST.get('username', '')
+                password = request.POST.get('password', '')
                 user = authenticate(username=username, password=password)
-                login(request, user)
+                auth_login(request, user)
                 messages.success(request, 'You were successfully registered, thanks!')
-                return HttpResponseRedirect(reverse('cts_app:index'))
-
+                return redirect(next_page)
         else:
             return render(request, 'cts_app/login.html',
-                          {'nbar': 'Log in/register', 'forms': form, 'forms2': LoginForm()})
+                          {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': form,
+                           'next': next_page})
     else:
-        messages.error(request, 'Oops, something went wrong')
-        return HttpResponseRedirect(reverse('cts_app:index'))
-
-
-def logout_view(request):
-    logout(request)
-    # Redirect to a success page.
-    messages.success(request, 'You were successfully logged out')
-    return redirect(request.GET.get('next', 'cts_app:index'))
-
-
-def login_page(request):
-    next_page = request.GET.get('next')
-    return render(request, 'cts_app/login.html',
-                  {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': RegisterForm(), 'next': next_page})
-
-
-def login_view(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-            messages.success(request, 'You were successfully logged in')
-            # HttpResponseRedirect(redirect_to)
-            return redirect(request.GET.get('next', 'cts_app:index'))
-        else:
-            # Return a 'disabled account' error message
-            messages.error(request, 'Your account was disabled')
-            return render(request, 'cts_app/login.html',
-                          {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm()})
-            # TODO Return an 'invalid login' error message.
-    else:
-        messages.error(request, 'Invalid login or password')
         return render(request, 'cts_app/login.html',
-                      {'nbar': 'Log in/register', 'forms': RegisterForm(), 'forms2': LoginForm()})
+                      {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': RegisterForm(),
+                       'next': next_page})
 
 
-def profile(request, user):
+def profile(request, user=''):
+    if request.method == 'POST':
+        try:
+            user = User.objects.get(username=request.POST.get('user', ''))
+            voted_user = User.objects.get(username=request.POST.get('voted_user', ''))
+        except User.DoesNotExist:
+            raise Http404("User doesn\'t exists")
+        else:
+            try:
+                vote = Votes.objects.get(user=user, voted_user=voted_user)
+
+            except Votes.DoesNotExist:
+                Votes.objects.create(user=user, voted_user=voted_user, rate=request.POST.get('rate', ''),
+                                     comment=request.POST.get('comment', ''))
+            else:
+                vote.rate = request.POST.get('rate', '')
+                vote.comment = request.POST.get('comment', '')
+                vote.pub_date = timezone.now()
+                vote.save(update_fields=['rate', 'comment', 'pub_date'])
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
     try:
         user = User.objects.get(username=user)
     except User.DoesNotExist:
-        raise Http404("User doesnt exists")
+        raise Http404("User doesnt exists!")
 
     form = UserVote(user=user, voted_user=request.user)
     votes = Votes.objects.filter(user=user).order_by('-pub_date')
@@ -215,30 +224,8 @@ def profile(request, user):
                                                     'games': games})
 
 
-def vote(request):
-    if request.method == 'POST':
-        try:
-            user = User.objects.get(username=request.POST['user'])
-            voted_user = User.objects.get(username=request.POST['voted_user'])
-        except User.DoesNotExist:
-            raise Http404("User doesnt exists")
-        else:
-            try:
-                vote = Votes.objects.get(user=user, voted_user=voted_user)
-
-            except Votes.DoesNotExist:
-                Votes.objects.create(user=user, voted_user=voted_user, rate=request.POST['rate'],
-                                     comment=request.POST['comment'])
-            else:
-                vote.rate = request.POST['rate']
-                vote.comment = request.POST['comment']
-                vote.pub_date = timezone.now()
-                vote.save(update_fields=['rate', 'comment', 'pub_date'])
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-
 def reqdel(request, req_id):
-    if request.user.username == Req.objects.get(id=req_id).nickname.__str__():
+    if request.user.username == Req.objects.get(id=req_id).nickname.__str__() and request.user.is_authenticated():
         Req.objects.filter(id=req_id).update(active=False)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -258,32 +245,30 @@ def top(request, entity):
 
 
 def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        subject = request.POST.get('subject', '')
+        if subject != '':
+            subject = '[CTS] ' + subject
+        else:
+            subject = '[CTS] No subject'
+
+        from_email = request.POST.get('email', '')
+
+        if from_email != '':
+            message = request.POST.get('email', '') + ': \n' + request.POST.get('message', '')
+        else:
+            message = request.POST.get('message', '')
+        if request.POST.get('message', '') != '':
+            try:
+                send_mail(subject, message, 'goplaycoop@yandex.ru', ['drakonmail@gmail.com'], fail_silently=True)
+            except BadHeaderError:
+                messages.success(request, 'Invalid header found.')
+                return HttpResponseRedirect(reverse('cts_app:contact'))
+            messages.success(request, 'Your message was sent, thanks!')
+            return HttpResponseRedirect(reverse('cts_app:index'))
+        else:
+            return render(request, 'cts_app/contact.html', {'nbar': 'contact', 'forms': form})
+
     form = ContactForm
     return render(request, 'cts_app/contact.html', {'nbar': 'contact', 'forms': form})
-
-
-def send_email(request):
-    form = ContactForm(request.POST)
-    subject = request.POST['subject']
-    if subject:
-        subject = '[CTS] ' + subject
-    else:
-        subject = '[CTS] No subject'
-
-    from_email = request.POST['email']
-
-    if from_email:
-        message = request.POST['email'] + ': \n' + request.POST['message']
-    else:
-        message = request.POST['message']
-    if subject and message:
-        try:
-            send_mail(subject, message, 'goplaycoop@yandex.ru', ['drakonmail@gmail.com'], fail_silently=False)
-        except BadHeaderError:
-            return HttpResponse('Invalid header found.')
-        messages.success(request, 'Your message was sent, thanks!')
-        return HttpResponseRedirect(reverse('cts_app:index'))
-    else:
-        form.add_error('message', 'Please enter your message')
-        return HttpResponseRedirect(reverse('cts_app:contact'))
-        # HttpResponseRedirect(reverse('cts_app:contact'))

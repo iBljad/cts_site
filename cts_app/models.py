@@ -60,6 +60,7 @@ class RegisterForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'off'
             })
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = User

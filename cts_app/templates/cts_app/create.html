@@ -1,4 +1,5 @@
 {% extends 'cts_app/base.html' %}
+{% block headtitle %}Creating request{% endblock %}
 {% block title %}Creating request{% endblock %}
 
 {% block content %}
@@ -10,9 +11,7 @@
         </div>
         <div class="row row-centered">
 
-            <form action={% url 'cts_app:apply' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
-                {#%cts_app:apply %#}
-
+            <form action={% url 'cts_app:create' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
 
                 {% include "cts_app/form_snippet.html" %}
 
@@ -25,7 +24,8 @@
             </form>
         </div>
     {% else %}
-        You are not logged in, please <a href="{% url 'cts_app:login_page' %}?next={{ request.get_full_path|urlencode }}">log in or register</a></li>
+        You are not logged in, please
+        <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">log in or register</a></li>
     {% endif %}
 
 

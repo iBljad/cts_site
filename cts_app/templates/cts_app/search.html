@@ -1,4 +1,5 @@
 {% extends 'cts_app/base.html' %}
+{% block headtitle %}Search for request{% endblock %}
 {% block title %}Search for request{% endblock %}
 
 {% block content %}
@@ -8,10 +9,10 @@
     </div>
     <div class="row row-centered">
 
-        <form action={% url 'cts_app:result' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
-            {#%cts_app:apply %#}
+        <form action={% url 'cts_app:search' %}?search= method="get" class="form-horizontal" role="form">
 
             {% include "cts_app/form_snippet.html" %}
+            <input type="hidden" name="type" value="search">
 
             <div class="form-group">
                 <div class="col-sm-1 col-centered"></div>
@@ -21,4 +22,5 @@
             </div>
         </form>
     </div>
+    <script language="JavaScript">var nameValue = document.getElementById("nickname").value</script>
 {% endblock content %}
