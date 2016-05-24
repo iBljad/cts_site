@@ -40,7 +40,6 @@
 
 <p>Буду рад, если вы <a href="{% url 'cts_app:contact' %}">оставите свой отзыв</a> о работе сайта или
 даже (что вообще невообразимо), <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">зарегистрируетесь</a> на нем! Спасибо!</p>
-{% endblock content %}
 
 <p>PS: чтобы посмотреть, как выглядит список заявок, просто нажмите <b>Search</b> рядом с пустым полем быстрого поиска или перейдите по <a href="{% url 'cts_app:search' %}?query=&type=quicksearch">этой ссылке</p>
 
