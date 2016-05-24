@@ -3,58 +3,45 @@
 {% block title %}Main page{% endblock %}
 {% block content %}
 
-    {#    {% if message %}#}
-    {#        <div class="alert alert-dismissible alert-success">#}
-    {#        <button type="button" class="close" data-dismiss="alert">&times;</button>#}
-    {#        {{ message }}#}
-    {##}
-    {#    {% endif %}#}
+
+
+<p>Приветствую вас на сайте <b>Go Play Coop!</b></p>
+
+<p>Он создан для поиска напарников в кооперативных видеоиграх
+(почти как Тиндер, но для геймеров :)</p>
+
+<p>Принцип сервиса довольно прост — это база заявок от игроков,
+которые хотели бы найти компаньона для кооперативного прохождения игр.
+<br>
+По этой базе можно осуществить поиск (как <a href="{% url 'cts_app:index' %}">расширенный</a>, так и
+быстрый — в левом верхнем углу), либо самому <a href="#" data-toggle="modal" data-target="#createModal">оставить заявку</a> (для этого нужна
+<a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">регистрация</a>, но это быстро, процесс довольно упрощенный). Чтобы оставить
+заявку, нужно указать платформу и игру, для который вы ищете напарников, и, по
+желанию комментарий (предпочитаемое время игры, ваш игровой ник итд.)
+<br>
+Если вы больше не ищете компаньонов, то вы можете удалить
+свою заявку, и ее больше никто не увидит.</p>
 
 
 
+<p>У каждого пользователя в профиле есть рейтинг (от 1 до 5),
+на который могут влиять другие зарегистрированные пользователи и оставлять к
+нему комментарий (как восторженные отзывы, так и наоборот, например, что игрок
+— злостный кидала :D). Попасть в профиль пользователя
+можно через поиск, нажав в результатах на его имя.</p>
 
-    {% if reqs %}
-        <div class="panel panel-default">
-            <table align="center"
-                   class="table table-nonfluid table-striped table-condensed table-bordered table-hover table-responsive">
 
-                <thead>
-                <tr>
-                    <th class="col-md-2">Game</th>
-                    <th class="col-md-1">Platform</th>
-                    <th class="col-md-1">Nickname</th>
-                    <th class="col-md-5">Comment</th>
-                    <th class="col-md-2">Apply date</th>
-                </tr>
-                </thead>
 
-                <tbody>
-                {% for req in reqs %}
-                    <tr>
-                        <td class="col-md-2">{{ req.game }}</td>
-                        <td class="col-md-1">{{ req.platform }}</td>
-                        <td class="col-md-1"><a href="{% url 'cts_app:profile' req.nickname %}">{{ req.nickname }}</a>
-                        </td>
-                        <td style="word-break:break-all;" class="col-md-5">{{ req.comment }}</td>
-                        <td class="col-md-2">{{ req.pub_date|date:"H:i, d.m.y" }}</td>
-                    </tr>
-                {% endfor %}
-                <tr>
-                    <td class="col-md-2">{% lorem 10 w random %}</td>
-                    <td class="col-md-1">gameboy advance blah</td>
-                    <td class="col-md-1">nicknamenicknamenick</a></td>
-                    <td style="word-break:break-all;" class="col-md-5">{% lorem 40 w %}</td>
-                    <td class="col-md-2">13:07, 25.03.16</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p>No reqs are available.</p>
-    {% endif %}
-    <!-- {% for platform in platforms %}
-<a href="create/{{ platform.id }}">{{ platform.platform }}</a><br>
-{% endfor %}
- -->
+<p>Также у сайта есть разные сопутствующие плюшки: топ-10 самых
+популярных игр/платформ/игроков, <a href="{% url 'cts_app:contact' %}">форма обратной связи</a>, предпочитаемые игры/платформы в профиле игроков и даже более-менее выглядящее
+мобильное меню (попробуйте изменить размер до минимального).</p>
+
+
+
+<p>Буду рад, если вы <a href="{% url 'cts_app:contact' %}">оставите свой отзыв</a> о работе сайта или
+даже (что вообще невообразимо), <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">зарегистрируетесь</a> на нем! Спасибо!</p>
 {% endblock content %}
 
+<p>PS: чтобы посмотреть, как выглядит список заявок, просто нажмите <b>Search</b> рядом с пустым полем быстрого поиска или перейдите по <a href="{% url 'cts_app:search' %}?query=&type=quicksearch">этой ссылке</p>
+
+{% endblock content %}
