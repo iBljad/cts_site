@@ -116,7 +116,8 @@
             </li>
             <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a></li>
             <li class="{% if nbar == 'profile' %}active{% endif %} {% if not user.is_authenticated %} disabled{% endif %}">
-                <a href="{% if user.is_authenticated %} {% url 'cts_app:profile' user.username %}{% else %}#" {% endif %}>Profiles</a>
+                <a href="{% if user.is_authenticated %}
+                    {% url 'cts_app:profile' user.username %}{% else %}# {% endif %}">Profiles</a>
             </li>
             <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
@@ -133,7 +134,8 @@
             </li>
 
 
-            <form action={% url 'cts_app:search' %} class="navbar-form navbar-right input-sm" role="form" method="get">
+            <form action={% url 'cts_app:search' %} class="navbar-form navbar-right input-sm
+            " role="form" method="get">
             <div class="form-group">
                 <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
                 <input type="hidden" name="type" value="quicksearch">
@@ -145,10 +147,12 @@
 
             {% if user.is_authenticated %}
                 <li class="navbar-right"><a
-                        href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log out</a></li>
+                        href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
+                    out</a></li>
             {% else %}
                 <li class="{% if nbar == 'Log in/register' %}active{% endif %} navbar-right"><a
-                        href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log in</a></li>
+                        href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log
+                    in</a></li>
             {% endif %}
 
         </ul>
@@ -195,8 +199,9 @@
                         </li>
 
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
-                                out</a></li>
+                            <li>
+                                <a href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
+                                    out</a></li>
                         {% else %}
                             <li class="{% if nbar == 'Log in/register' %}active{% endif %}"><a
                                     href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log

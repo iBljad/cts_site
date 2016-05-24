@@ -1,15 +1,7 @@
 {% extends 'cts_app/base.html' %}
 {% block headtitle %}{{ user1.username }}'s profile{% endblock %}
 
-{% block title %}<b>{{ user1.username }}</b>. {% if rating %}
-    User rating is <b>{{ rating|floatformat:-2 }}</b>.
-{% endif %}
-
-    {% if user.is_authenticated and user.username != user1.username %}
-        <a href="#" data-toggle="modal" data-target="#RateModal">Rate this user</a>
-    {% elif not user.is_authenticated %} <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log in</a> to
-        rate this user
-    {% endif %}{% endblock %}
+{% block title %}{{ user1.username|capfirst }}'s profile{% endblock %}
 {% block content %}
 
     <!-- Modal -->
@@ -64,16 +56,16 @@
                             {% endif %}
                         {% endfor %}
 
-                        <div class="form-group">
-                            <div class="col-sm-2 col-centered"></div>
-                            <div class="col-sm-8 col-centered" align="right">
+
+                </div>
+                <div class="modal-footer">
+                    <div class="form-group">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-8" align="right">
                                 <input type="submit" class="btn btn-primary" value="Submit">
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
 
@@ -93,6 +85,15 @@
         </ul> -->
     <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade active in" id="Profile">
+        {% if rating %}
+            <p class="text-info">{{ user1.username|capfirst }}'s rating is <b>{{ rating|floatformat }}/5</b>.
+        {% endif %}
+
+    {% if user.is_authenticated and user.username != user1.username %}
+        <a href="#" data-toggle="modal" data-target="#RateModal">Rate this user</a>
+    {% elif not user.is_authenticated %} <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log in</a> to
+        rate this user.
+    {% endif %}</p><p><p>
 
 
             {% if platforms %}
