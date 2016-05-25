@@ -17,3 +17,4 @@ urlpatterns = [
     url(r'^feedback', view=views.contact, name='contact'),
 
 ]
+

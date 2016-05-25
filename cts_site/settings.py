@@ -25,7 +25,7 @@ SECRET_KEY = '40f^9_%p2f7p&=ca@5-9i)b6ad(%kl4b95h$=s8pr-!px$&952'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['cts.pythonanywhere.com']
+ALLOWED_HOSTS = ['188.213.168.204', 'localhost']
 
 
 # Application definition
@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'cts_site.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'gpc',
+        'USER': 'user1',
+        'PASSWORD': 'Anna1234',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -120,6 +124,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

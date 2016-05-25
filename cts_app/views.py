@@ -272,3 +272,4 @@ def contact(request):
 
     form = ContactForm
     return render(request, 'cts_app/contact.html', {'nbar': 'contact', 'forms': form})
+
