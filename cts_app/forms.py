@@ -35,13 +35,6 @@ class SearchForm(forms.Form):
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), max_length=20)
 
 
-# class Votes(models.Model):
-#     user = models.ForeignKey(User)
-#     rate = models.PositiveSmallIntegerField()
-#     comment = models.CharField(max_length=1000)
-#     voted_user = models.ForeignKey(User, related_name='Voter')
-
-
 class UserVote(forms.Form):
     my_choices = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
 
@@ -73,4 +66,3 @@ class ContactForm(forms.Form):
             self.fields[field].widget.attrs.update({
                 'class': 'form-control'
             })
-
