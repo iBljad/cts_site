@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^reqdel/(?P<req_id>[0-9]+)$', view=views.reqdel, name='reqdel'),
     url(r'^top/(?P<entity>.*)$', view=views.top, name='top'),
     url(r'^feedback', view=views.contact, name='contact'),
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
+    url(r'^accounts/', include('allauth.urls')),
 
 ]
-

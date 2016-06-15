@@ -54,7 +54,7 @@
             border-bottom: 5px solid #2a9fd6;
         }
     </style>
-    <title>Go Play Coop — {% block headtitle %} {% endblock %}
+    <title>Go Play Coop — {% block head_title %} {% endblock %}
         {#        {% if nbar == 'home' %} — Home{% endif %}#}
         {#        {% if nbar == 'create' %} — Create Game Request{% endif %}#}
         {#        {% if nbar == 'search' %} — Search for Game Requests{% endif %}#}
@@ -109,10 +109,6 @@
                 <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
             </li>
             <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a></li>
-            <li class="{% if nbar == 'profile' %}active{% endif %} {% if not user.is_authenticated %} disabled{% endif %}">
-                <a href="{% if user.is_authenticated %}
-                    {% url 'cts_app:profile' user.username %}{% else %}# {% endif %}">Profiles</a>
-            </li>
             <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                     Tops <span class="caret"></span>
@@ -139,16 +135,37 @@
             </button>
             </form>
 
-            {% if user.is_authenticated %}
-                <li class="navbar-right"><a
-                        href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
-                    out</a></li>
-            {% else %}
-                <li class="{% if nbar == 'Log in/register' %}active{% endif %} navbar-right"><a
-                        href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log
-                    in</a></li>
-            {% endif %}
 
+            <li class="dropdown navbar-right  {% if nbar == 'tops' %}active{% endif %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    {% if user.is_authenticated %}
+                        <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" height="25" width="25"/>
+                        {{ user.first_name }}
+{#                        {{ user.last_name }}#}
+                    {% else %}
+                        Sign in
+                    {% endif %}
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+
+                    {% if not user.is_authenticated %}
+                        <li><a id="site_login" href="/accounts/login">Sign in</a></li>
+                        <li><a id="site_login" href="/accounts/signup">Sign up</a></li>
+
+                        <li><a id="facebook_login" href="/accounts/facebook/login">Sign in with
+                            Facebook</a></li>
+                        <li><a id="twitter_login" href="/accounts/twitter/login">Sign in with
+                            Twitter</a>
+                        <li><a id="google_login" href="/accounts/google/login">Sign in with
+                            Google</a></li>
+                        <li><a id="vk_login" href="/accounts/vk/login">Sign in with VK</a></li>
+                    {% else %}
+                        <li><a href="{% url 'cts_app:profile' user.username %}">Profile</a></li>
+                        <li><a id="logout" href="/accounts/logout">Logout</a></li>
+                    {% endif %}
+                </ul>
+            </li>
         </ul>
 
 
@@ -173,11 +190,6 @@
                         </li>
                         <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a>
                         </li>
-                        {% if user.is_authenticated %}
-                            <li class="{% if nbar == 'profile' %}active{% endif %}">
-                                <a href="{% url 'cts_app:profile' user.username %}">Profiles</a>
-                            </li>
-                        {% endif %}
                         <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                                 Tops <span class="caret"></span>
@@ -238,7 +250,7 @@
                             <div class="alert alert-dismissible alert-{{ message.level_tag }} col-sm-6">
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                                 {{ message }}
-                            </div>
+                            </div><br/>
                         {% endfor %}
                         <div class="col-sm-3">
                         </div>

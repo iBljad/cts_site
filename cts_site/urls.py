@@ -20,4 +20,7 @@ urlpatterns = [
     url(r'^', include('cts_app.urls', namespace='cts_app')),
     url(r'^cts_app/', include('cts_app.urls', namespace='cts_app')),
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}),
+    url(r'^accounts/', include('allauth.urls')),
+    url(r'^i18n/', include('django.conf.urls.i18n')),
 ]

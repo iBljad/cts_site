@@ -1,17 +1,32 @@
+import hashlib
 from datetime import timedelta
-from django.core.mail import send_mail, BadHeaderError
+
+from django.utils.translation import ugettext as _
+from allauth.socialaccount.models import SocialAccount
 from django.contrib import messages
 from django.contrib.auth import logout, authenticate, login as auth_login
 from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail, BadHeaderError
 from django.core.urlresolvers import reverse
 from django.db.models import Avg, Count
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
+
 from .forms import GamesDD, SearchForm, UserVote, ContactForm
 from .models import Req, Platform, Game, Link, GamesDDForm, RegisterForm, LoginForm, Votes
+
+
+def profile_image_url(self):
+    fb_uid = SocialAccount.objects.filter(user_id=self.user.id, provider='facebook')
+
+    if len(fb_uid):
+        return "http://cs5.pikabu.ru/post_img/2015/12/28/1/1451255908158523926.jpg"
+
+    return "http://cs5.pikabu.ru/post_img/2015/12/28/1/1451255908158523926.jpg".format(
+        hashlib.md5(self.user.email).hexdigest())
 
 
 def index(request):
@@ -19,9 +34,18 @@ def index(request):
     # reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
     # platforms = Platform.objects.all()
     messages.debug(request, 'Test')
+    messages.success(request, 'Test.')
+    messages.warning(request, _("Hello"))
+    messages.error(request, 'Badum ts!')
+    messages.success(request, 'WAAAAAAAAAAAAAAAAAAAAAARN!')
+
+    fb_uid = SocialAccount.objects.filter(user_id=request.user.id, provider='facebook')
+    img = ''
+    if len(fb_uid):
+        img = "http://graph.facebook.com/{}/picture?width=80&height=80".format(fb_uid[0].uid)
 
     return render(request, 'cts_app/index.html',
-                  {''' 'platforms': platforms,  'reqs': reqs,''' 'nbar': 'home'})
+                  {''' 'platforms': platforms,  'reqs': reqs,''' 'nbar': 'home', 'img': img})
 
 
 def create(request):

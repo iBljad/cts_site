@@ -2,6 +2,7 @@ from django.db import models
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django import forms
+from allauth.account.models import EmailAddress
 
 
 class Platform(models.Model):
@@ -60,6 +61,7 @@ class RegisterForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'off'
             })
+
     email = forms.EmailField(required=True)
 
     class Meta:
@@ -99,3 +101,23 @@ class Votes(models.Model):
 
     class Meta:
         unique_together = (("user", "voted_user"),)
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name='profile')
+
+    def __unicode__(self):
+        return "{}'s profile".format(self.user.username)
+
+    class Meta:
+        db_table = 'user_profile'
+
+    def account_verified(self):
+        if self.user.is_authenticated:
+            result = EmailAddress.objects.filter(email=self.user.email)
+            if len(result):
+                return result[0].verified
+        return False
+
+
+User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
