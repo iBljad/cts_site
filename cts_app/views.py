@@ -30,7 +30,6 @@ def profile_image_url(self):
 
 
 def index(request):
-    form = ContactForm
     # reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
     # platforms = Platform.objects.all()
     messages.debug(request, 'Test')
@@ -44,8 +43,10 @@ def index(request):
     if len(fb_uid):
         img = "http://graph.facebook.com/{}/picture?width=80&height=80".format(fb_uid[0].uid)
 
+    form = SearchForm()
+
     return render(request, 'cts_app/index.html',
-                  {''' 'platforms': platforms,  'reqs': reqs,''' 'nbar': 'home', 'img': img})
+                  {''' 'platforms': platforms,  'reqs': reqs,''' 'nbar': 'home', 'img': img, 'forms': form})
 
 
 def create(request):

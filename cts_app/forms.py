@@ -26,13 +26,13 @@ class GamesDD(forms.Form):
 
 
 class SearchForm(forms.Form):
-    platforms = [(p.pk, p.platform) for p in Platform.objects.all()] + [('', '---------')]
-    games = [(p.pk, p.game) for p in Game.objects.all()] + [('', '---------')]
+    platforms = [(p.pk, p.platform) for p in Platform.objects.all()] + [('', 'Platform')]
+    games = [(p.pk, p.game) for p in Game.objects.all()] + [('', 'Game')]
     platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
                                  choices=platforms)
     game = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
                              choices=games)
-    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), max_length=20)
+    nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nickname'}), max_length=20)
 
 
 class UserVote(forms.Form):

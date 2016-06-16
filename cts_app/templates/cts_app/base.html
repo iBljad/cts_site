@@ -1,12 +1,15 @@
 <html>
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cyborg/bootstrap.min.css">
+    {% load i18n %}
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cyborg/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-uSbimwRPo7PKyTL6azsx1CcBce/X9Qg+wX1MAjNV1gAkSXYveZbZeMMyJghdsSol" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="https://dl.dropboxusercontent.com/u/31131306/CTSb.png" sizes="32x32"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/cyborg/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
@@ -25,6 +28,9 @@
 
     </script>
     <style type="text/css">
+        input, select, textarea {
+        .form-control
+        }
 
         .row {
             margin-left: 0;
@@ -62,6 +68,7 @@
 </head>
 
 <body>
+
 
 <!-- Modal -->
 <div id="createModal" class="modal fade" role="dialog">
@@ -104,34 +111,53 @@
 
         {#    OLD#}
         <ul class="nav nav-pills hidden-xs">
-            <li class="{% if nbar == 'home' %}active{% endif %}"><a href="{% url 'cts_app:index' %}">Home</a></li>
+            <li class="{% if nbar == 'home' %}active{% endif %}"><a
+                    href="{% url 'cts_app:index' %}">{% trans "Home" %}</a></li>
             <li class="{% if nbar == 'create' %}active{% endif %}"><!-- Trigger the modal with a button -->
-                <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
+                <a href="#" data-toggle="modal" data-target="#createModal">{% trans "Create request" %}</a>
             </li>
-            <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a></li>
             <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                    Tops <span class="caret"></span>
+                    {% trans "Tops" %} <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'cts_app:top' 'game' %}">Top games</a></li>
-                    <li><a href="{% url 'cts_app:top' 'platform' %}">Top platforms</a></li>
-                    <li><a href="{% url 'cts_app:top' 'user' %}">Top users</a></li>
+                    <li><a href="{% url 'cts_app:top' 'game' %}">{% trans "Top games" %}</a></li>
+                    <li><a href="{% url 'cts_app:top' 'platform' %}">{% trans "Top platforms" %}</a></li>
+                    <li><a href="{% url 'cts_app:top' 'user' %}">{% trans "Top users" %}</a></li>
                 </ul>
             </li>
             <li class="{% if nbar == 'contact' %}active{% endif %}"><!-- Trigger the contact modal with a button -->
-                <a href="{% url 'cts_app:contact' %}">Feedback</a>
+                <a href="{% url 'cts_app:contact' %}">{% trans "Feedback" %}</a>
             </li>
 
+            {#          LANGUANGE CHANGE FORM#}
+            <form class="navbar-form navbar-right input-sm" action="{% url 'set_language' %}"
+                  method="post">{% csrf_token %}
+                <div class="form-group">
+                    <input name="next" type="hidden" value="{{ redirect_to }}"/>
+                    <select name="language" class="form-control input-sm" onChange="form.submit()">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %}
+                                    selected="selected"{% endif %}>
+                                {{ language.name|upper|slice:":3" }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
 
+            {#          QUICK SEARCH FORM#}
             <form action={% url 'cts_app:search' %} class="navbar-form navbar-right input-sm
             " role="form" method="get">
             <div class="form-group">
-                <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
+                <input type="text" class="form-control input-sm" placeholder="{% trans "Quick search" %}" name="query">
                 <input type="hidden" name="type" value="quicksearch">
             </div>
             <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
-                    data-placement="bottom">Search
+                    data-placement="bottom">{% trans "Search" %}
             </button>
             </form>
 
@@ -141,28 +167,31 @@
                     {% if user.is_authenticated %}
                         <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" height="25" width="25"/>
                         {{ user.first_name }}
-{#                        {{ user.last_name }}#}
+                        {#                        {{ user.last_name }}#}
                     {% else %}
-                        Sign in
+                        {% trans "Sign in" %}
                     {% endif %}
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
 
                     {% if not user.is_authenticated %}
-                        <li><a id="site_login" href="/accounts/login">Sign in</a></li>
-                        <li><a id="site_login" href="/accounts/signup">Sign up</a></li>
+                        <li><a id="site_login"
+                               href="/accounts/login">{% trans "Sign in" %}</a>
+                        </li>
+                        <li><a id="site_login"
+                               href="/accounts/signup">{% trans "Sign up" %}</a>
+                        </li>
 
-                        <li><a id="facebook_login" href="/accounts/facebook/login">Sign in with
-                            Facebook</a></li>
-                        <li><a id="twitter_login" href="/accounts/twitter/login">Sign in with
-                            Twitter</a>
-                        <li><a id="google_login" href="/accounts/google/login">Sign in with
-                            Google</a></li>
-                        <li><a id="vk_login" href="/accounts/vk/login">Sign in with VK</a></li>
+                        <li><a id="facebook_login"
+                               href="/accounts/facebook/login">{% trans "Sign in with Facebook" %}</a></li>
+                        <li><a id="twitter_login" href="/accounts/twitter/login">{% trans "Sign in with Twitter" %}</a>
+                        <li><a id="vk_login" href="/accounts/vk/login">{% trans "Sign in with VK" %}</a></li>
                     {% else %}
-                        <li><a href="{% url 'cts_app:profile' user.username %}">Profile</a></li>
-                        <li><a id="logout" href="/accounts/logout">Logout</a></li>
+                        <li><a href="{% url 'cts_app:profile' user.username %}">{% trans "Profile" %}</a></li>
+                        <li><a id="logout"
+                               href="/accounts/logout">{% trans "Logout" %}</a>
+                        </li>
                     {% endif %}
                 </ul>
             </li>
@@ -184,47 +213,74 @@
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
                         <li class="{% if nbar == 'home' %}active{% endif %}"><a
-                                href="{% url 'cts_app:index' %}">Home</a></li>
+                                href="{% url 'cts_app:index' %}">{% trans "Home" %}</a></li>
                         <li class="{% if nbar == 'create' %}active{% endif %}"><!-- Trigger the modal with a button -->
-                            <a href="#" data-toggle="modal" data-target="#createModal">Create request</a>
-                        </li>
-                        <li class="{% if nbar == 'search' %}active{% endif %}"><a href="{% url 'cts_app:search' %}">Search</a>
+                            <a href="#" data-toggle="modal" data-target="#createModal">{% trans "Create request" %}</a>
                         </li>
                         <li class="dropdown  {% if nbar == 'tops' %}active{% endif %}">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
-                                Tops <span class="caret"></span>
+                                {% trans "Tops" %} <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="{% url 'cts_app:top' 'game' %}">Top games</a></li>
-                                <li><a href="{% url 'cts_app:top' 'platform' %}">Top platforms</a></li>
-                                <li><a href="{% url 'cts_app:top' 'user' %}">Top users</a></li>
+                                <li><a href="{% url 'cts_app:top' 'game' %}">{% trans "Top games" %}</a></li>
+                                <li><a href="{% url 'cts_app:top' 'platform' %}">{% trans "Top platforms" %}</a></li>
+                                <li><a href="{% url 'cts_app:top' 'user' %}">{% trans "Top users" %}</a></li>
                             </ul>
                         </li>
                         <li class="{% if nbar == 'contact' %}active{% endif %}">
-                            <a href="{% url 'cts_app:contact' %}">Feedback</a>
+                            <a href="{% url 'cts_app:contact' %}">{% trans "Feedback" %}</a>
                         </li>
 
                         {% if user.is_authenticated %}
                             <li>
-                                <a href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
-                                    out</a></li>
+
+                            <li><a href="{% url 'cts_app:profile' user.username %}">{% trans "Profile" %}</a></li>
+                            <li><a id="logout"
+                                   href="/accounts/logout">{% trans "Logout" %}</a>
+                            </li>
+
                         {% else %}
-                            <li class="{% if nbar == 'Log in/register' %}active{% endif %}"><a
-                                    href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log
-                                in</a></li>
+                            <li><a id="site_login"
+                                   href="/accounts/login">{% trans "Sign in" %}</a>
+                            </li>
+                            <li><a id="site_signup"
+                                   href="/accounts/signup">{% trans "Sign up" %}</a>
+                            </li>
                         {% endif %}
 
                         <li>
-                            <form action={% url 'cts_app:search' %} class="navbar-form" role="form" method="get">
+                            <form action={% url 'cts_app:search' %} class="form-inline sm input-sm
+                            " role="form" method="get">
+                            <div class="form-group col-xs-9" style="padding-left: 0px; padding-right: 0px;">
                                 <input type="hidden" name="type" value="quicksearch">
-
-                                <div class="form-group">
-                                    <input type="text" class="form-control input-sm" placeholder="Quick search"
-                                           name="query">
-                                </div>
+                                <input type="text" class="form-control input-sm"
+                                       placeholder="{% trans "Quick search" %}"
+                                       name="query">
+                            </div>
+                            <div class="form-group col-xs-1">
                                 <button type="submit" class="btn btn-sm btn-default test" data-toggle="tooltip"
-                                        data-placement="bottom">Search
+                                        data-placement="bottom">{% trans "Search" %}
                                 </button>
+                            </div>
+                            </form>
+                        </li>
+                        <li>
+                            <form class="form-inline sm input-sm" action="{% url 'set_language' %}"
+                                  method="post">{% csrf_token %}
+                                <div class="form-group">
+                                    <input name="next" type="hidden" value="{{ redirect_to }}"/>
+                                    <select name="language" class="form-control input-sm" onChange="form.submit()">
+                                        {% get_current_language as LANGUAGE_CODE %}
+                                        {% get_available_languages as LANGUAGES %}
+                                        {% get_language_info_list for LANGUAGES as languages %}
+                                        {% for language in languages %}
+                                            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %}
+                                                    selected="selected"{% endif %}>
+                                                {{ language.name|upper|slice:":3" }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </form>
                         </li>
 
@@ -242,21 +298,21 @@
             <div class="panel-body">
                 {% if messages %}
 
+                    {% for message in messages %}
+                        <div class="row row-centered">
+                            <div class="col-sm-3">
+                            </div>
 
-                    <div class="row row-centered">
-                        <div class="col-sm-3">
-                        </div>
-                        {% for message in messages %}
                             <div class="alert alert-dismissible alert-{{ message.level_tag }} col-sm-6">
                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                                 {{ message }}
-                            </div><br/>
-                        {% endfor %}
-                        <div class="col-sm-3">
+                            </div>
+
+                            <div class="col-sm-3">
+                            </div>
+
                         </div>
-
-                    </div>
-
+                    {% endfor %}
 
                 {% endif %}
 
@@ -283,10 +339,17 @@
     $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip({
             html: true,
-            title: '<p align="left">Type in game, platform or even nickname!</p><p align="left"> E.g. PC, Dead Space 3 or MightyGamer2016</p>'
+            title: '<p align="left">{% trans "Type in game, platform or even nickname!" %}</p><p align="left">{% trans "E.g. PC, Dead Space 3 or MightyGamer2016" %}</p>'
         });
     });
 </script>
+{#<script>#}
+{#        var elements = document.getElementsByTagName("input");#}
+{#        for (var i = 0; i < elements.length; i++) {#}
+{#            var el = elements[i];#}
+{#            el.setAttribute("class", el.getAttribute("class") + " form-control");#}
+{#        }#}
+{#    </script>#}
 
 </body>
 </html>

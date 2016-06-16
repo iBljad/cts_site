@@ -1,63 +1,110 @@
 {% extends 'cts_app/base.html' %}
-{% block headtitle %}Main page{% endblock %}
-{% block title %}Main page{% endblock %}
-{% block content %}
-{% load account %}
-    {% user_display user %}
-
 {% load i18n %}
-
-<form action="{% url 'set_language' %}" method="post">{% csrf_token %}
-    <input name="next" type="hidden" value="{{ redirect_to }}" />
-    <select name="language">
-        {% get_current_language as LANGUAGE_CODE %}
-        {% get_available_languages as LANGUAGES %}
-        {% get_language_info_list for LANGUAGES as languages %}
-        {% for language in languages %}
-            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected="selected"{% endif %}>
-                {{ language.name_local }} ({{ language.code }})
-            </option>
-        {% endfor %}
-    </select>
-    <input type="submit" value="Go" />
-</form>
-{% blocktrans %} Welcome to GPC!{% endblocktrans %}
-<p>Приветствую вас на сайте <b>Go Play Coop!</b></p>
-
-<p>Он создан для поиска напарников в кооперативных видеоиграх
-(почти как Тиндер, но для геймеров :)</p>
-
-<p>Принцип сервиса довольно прост — это база заявок от игроков,
-которые хотели бы найти компаньона для кооперативного прохождения игр.
-<br>
-По этой базе можно осуществить поиск (как <a href="{% url 'cts_app:search' %}">расширенный</a>, так и
-быстрый — в левом верхнем углу), либо самому <a href="#" data-toggle="modal" data-target="#createModal">оставить заявку</a> (для этого нужна
-<a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">регистрация</a>, но это быстро, процесс довольно упрощенный). Чтобы оставить
-заявку, нужно указать платформу и игру, для который вы ищете напарников, и, по
-желанию комментарий (предпочитаемое время игры, ваш игровой ник итд.)
-<br>
-Если вы больше не ищете компаньонов, то вы можете удалить
-свою заявку, и ее больше никто не увидит.</p>
+{% block head_title %}{% trans "Main page" %}{% endblock %}
+{% block title %}{% trans "Main page" %}{% endblock %}
+{% block content %}
 
 
-
-<p>У каждого пользователя в профиле есть рейтинг (от 1 до 5),
-на который могут влиять другие зарегистрированные пользователи и оставлять к
-нему комментарий (как восторженные отзывы, так и наоборот, например, что игрок
-— злостный кидала :D). Попасть в профиль пользователя
-можно через поиск, нажав в результатах на его имя.</p>
+    <h3>{% trans "Find your coop teammate here" %}</h3>
+    {% trans "Choose any filter below" %}
+    <form action={% url 'cts_app:search' %}?search= method="get" class="form-inline" role="form">
 
 
+        <div class="form-group error">
+            <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
 
-<p>Также у сайта есть разные сопутствующие плюшки: топ-10 самых
-популярных игр/платформ/игроков, <a href="{% url 'cts_app:contact' %}">форма обратной связи</a>, предпочитаемые игры/платформы в профиле игроков и даже более-менее выглядящее
-мобильное меню (попробуйте изменить размер до минимального).</p>
+            <div class="controls col-centered col-sm-4">{{ field }}
+                            <span class="help-inline">
+                               {% for error in forms.non_field_errors %}
+                                   <p class="text-danger">{{ error }}</p> {% endfor %}
+                            </span>
+            </div>
+        </div>
+
+            {% for field in forms %}
+                {% if field.errors %}
+                    <div class="form-group error">
+                        <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+
+                        <div class="controls col-centered col-sm-4">{{ field }}
+                            <span class="help-inline">
+                                {% for error in  field.errors %}<p class="text-danger">{{ error }}</p>{% endfor %}
+                            </span>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+
+                        {{ field }}
+                            {% if field.help_text %}
+                                <p class="help-inline">
+                                    <small>{{ field.help_text }}</small>
+                                </p>
+                            {% endif %}
+
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+
+        <input type="hidden" name="type" value="search">
+
+        <div class="form-group">
+            <div class="col-sm-1 col-centered"></div>
+            <div class="col-sm-4 col-centered" align="right">
+                <input type="submit" class="btn btn-primary" value="Search">
+            </div>
+        </div>
+    </form>
+
+    <h4>{% trans "or create your own game request" %}</h4>
+
+
+    {% blocktrans %} Welcome to GPC!{% endblocktrans %}
+    <p>Приветствую вас на сайте <b>Go Play Coop!</b></p>
+
+    <p>Он создан для поиска напарников в кооперативных видеоиграх
+        (почти как Тиндер, но для геймеров :)</p>
+
+    <p>Принцип сервиса довольно прост — это база заявок от игроков,
+        которые хотели бы найти компаньона для кооперативного прохождения игр.
+        <br>
+        По этой базе можно осуществить поиск (как <a href="{% url 'cts_app:search' %}">расширенный</a>, так и
+        быстрый — в левом верхнем углу), либо самому <a href="#" data-toggle="modal" data-target="#createModal">оставить
+            заявку</a> (для этого нужна
+        <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">регистрация</a>, но
+        это быстро, процесс довольно упрощенный). Чтобы оставить
+        заявку, нужно указать платформу и игру, для который вы ищете напарников, и, по
+        желанию комментарий (предпочитаемое время игры, ваш игровой ник итд.)
+        <br>
+        Если вы больше не ищете компаньонов, то вы можете удалить
+        свою заявку, и ее больше никто не увидит.</p>
 
 
 
-<p>Буду рад, если вы <a href="{% url 'cts_app:contact' %}">оставите свой отзыв</a> о работе сайта или
-даже (что вообще невообразимо), <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">зарегистрируетесь</a> на нем! Спасибо!</p>
+    <p>У каждого пользователя в профиле есть рейтинг (от 1 до 5),
+        на который могут влиять другие зарегистрированные пользователи и оставлять к
+        нему комментарий (как восторженные отзывы, так и наоборот, например, что игрок
+        — злостный кидала :D). Попасть в профиль пользователя
+        можно через поиск, нажав в результатах на его имя.</p>
 
-<p>PS: чтобы посмотреть, как выглядит список заявок, просто нажмите <b>Search</b> рядом с пустым полем быстрого поиска или перейдите по <a href="{% url 'cts_app:search' %}?query=&type=quicksearch">этой ссылке</a></p>
+
+
+    <p>Также у сайта есть разные сопутствующие плюшки: топ-10 самых
+        популярных игр/платформ/игроков, <a href="{% url 'cts_app:contact' %}">форма обратной связи</a>, предпочитаемые
+        игры/платформы в профиле игроков и даже более-менее выглядящее
+        мобильное меню (попробуйте изменить размер до минимального).</p>
+
+
+
+    <p>Буду рад, если вы <a href="{% url 'cts_app:contact' %}">оставите свой отзыв</a> о работе сайта или
+        даже (что вообще невообразимо), <a
+                href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">зарегистрируетесь</a>
+        на нем! Спасибо!</p>
+
+    <p>PS: чтобы посмотреть, как выглядит список заявок, просто нажмите <b>Search</b> рядом с пустым полем быстрого
+        поиска или перейдите по <a href="{% url 'cts_app:search' %}?query=&type=quicksearch">этой ссылке</a></p>
 
 {% endblock content %}
