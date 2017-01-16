@@ -15,13 +15,14 @@ from .models import Req, Platform, Game, Link, GamesDDForm, RegisterForm, LoginF
 
 
 def index(request):
-    form = ContactForm
-    # reqs = Req.objects.filter(active=True).order_by('-pub_date')[:15]
+    # form = ContactForm
+    requests = Req.objects.filter(active=True).order_by('-pub_date')[:50]
     # platforms = Platform.objects.all()
     messages.debug(request, 'Test')
-
+    form = SearchForm()
+    # return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search'})
     return render(request, 'cts_app/index.html',
-                  {''' 'platforms': platforms,  'reqs': reqs,''' 'nbar': 'home'})
+                  {'forms': form, 'result': requests})
 
 
 def create(request):
@@ -62,39 +63,39 @@ def create(request):
 def search(request):
     search_type = request.GET.get('type', 'none')
     if search_type == 'search':
-        if request.GET.get('game', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+        if request.GET.get('game_1', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
                                                                                                            '').strip() != '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game', ''),
+            result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
                                         platform=request.GET.get('platform', ''),
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.GET.get('game', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
                                                                                                              '').strip() == '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game', ''),
+            result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
                                         platform=request.GET.get('platform', '')).order_by('-pub_date')
 
-        elif request.GET.get('game', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
+        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
                                                                                                              '').strip() != '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game', ''),
+            result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.GET.get('game', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
+        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
                                                                                                              '').strip() == '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game', '')).order_by('-pub_date')
+            result = Req.objects.filter(active=True, game=request.GET.get('game_1', '')).order_by('-pub_date')
 
-        elif request.GET.get('game', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
                                                                                                              '').strip() != '':
             result = Req.objects.filter(active=True, platform=request.GET.get('platform', ''),
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.GET.get('game', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
+        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
                                                                                                              '').strip() == '':
             result = Req.objects.filter(active=True, platform=request.GET.get('platform', '')).order_by('-pub_date')
 
-        elif request.GET.get('game', '') == '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
+        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
                                                                                                              '').strip() != '':
             result = Req.objects.filter(active=True,
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
@@ -107,7 +108,8 @@ def search(request):
         result = Req.objects.filter(
             Q(active=True, game__game__icontains=request.GET.get('query', '')) |
             Q(active=True, platform__platform__icontains=request.GET.get('query', '')) |
-            Q(active=True, nickname__username__icontains=request.GET.get('query', '').strip()))
+            Q(active=True, nickname__username__icontains=request.GET.get('query', '').strip())
+        ).order_by('-pub_date')
         return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
     else:
         form = SearchForm()
