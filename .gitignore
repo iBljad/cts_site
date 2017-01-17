@@ -5,5 +5,4 @@ myvenv
 .DS_Store
 .idea
 import
-/cts_site/settings.py
 cts_site/local_settings.py
