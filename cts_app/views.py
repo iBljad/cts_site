@@ -1,17 +1,19 @@
 from datetime import timedelta
-from django.core.mail import send_mail, BadHeaderError
+
 from django.contrib import messages
 from django.contrib.auth import logout, authenticate, login as auth_login
 from django.contrib.auth.models import User, Permission
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail, BadHeaderError
 from django.core.urlresolvers import reverse
 from django.db.models import Avg, Count
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .forms import GamesDD, SearchForm, UserVote, ContactForm
-from .models import Req, Platform, Game, Link, RegisterForm, LoginForm, Votes
+
+from .forms import SearchForm, UserVote, ContactForm, ReqPostForm
+from .models import Req, Platform, Game, RegisterForm, LoginForm, Votes
 
 
 def index(request):
@@ -27,12 +29,9 @@ def index(request):
 
 def create(request):
     if request.method == 'POST':
-
-        # f = GamesDDForm(request.POST)
-        # GamesDDForm.full_clean(f)
-        # f.fields.append('game')
-        # f.fields['game'] = f.fields['game_1']
-        # f.fields.remove('game_1')
+        #
+        # f = ReqPostForm(request.POST)
+        # ReqPostForm.full_clean(f)
 
         try:
             ttt = Req.objects.get(active=True, game=request.POST.get('game_1', ''),
@@ -49,7 +48,9 @@ def create(request):
                                    nickname=request.user,
                                    comment=request.POST.get('comment', ''))
             except ValidationError as e:
-                return HttpResponse(e.message_dict)
+                messages.error(request, 'Something went wrong:' + e.message)
+                form = ReqPostForm()
+                return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
 
             else:
                 messages.success(request, 'Your request was successfully posted')
@@ -60,59 +61,33 @@ def create(request):
         #     platform = Platform.objects.get(pk=platform_id)
         #     link = Link.objects.filter(platform=platform).values('game')
         #     games = Game.objects.filter(id__in=link)
-        form = SearchForm()
+        form = ReqPostForm()
         return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
 
 
 def search(request):
+    game_id = request.GET.get('game_1', '')
+    game_text = request.GET.get('game_0', '')
+    platform = request.GET.get('platform', '')
+    username = request.GET.get('nickname', '').strip()
+    q = [Q(active=True)]
+    if platform != '':
+        q.append(Q(platform=platform))
+    if username != '':
+        q.append(Q(nickname__username__icontains=username))
+    if game_id != '' and game_text != '':
+        q.append(Q(game=game_id))
+    elif game_text != '':
+        q.append(Q(game__game__icontains=game_text))
+
     search_type = request.GET.get('type', 'none')
     if search_type == 'search':
-        if request.GET.get('game_1', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
-                                                                                                             '').strip() != '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
-                                        platform=request.GET.get('platform', ''),
-                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
-                '-pub_date')
-
-        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') != '' and request.GET.get(
-                'nickname',
-                '').strip() == '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
-                                        platform=request.GET.get('platform', '')).order_by('-pub_date')
-
-        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get(
-                'nickname',
-                '').strip() != '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
-                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
-                '-pub_date')
-
-        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get(
-                'nickname',
-                '').strip() == '':
-            result = Req.objects.filter(active=True, game=request.GET.get('game_1', '')).order_by('-pub_date')
-
-        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get(
-                'nickname',
-                '').strip() != '':
-            result = Req.objects.filter(active=True, platform=request.GET.get('platform', ''),
-                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
-                '-pub_date')
-
-        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get(
-                'nickname',
-                '').strip() == '':
-            result = Req.objects.filter(active=True, platform=request.GET.get('platform', '')).order_by('-pub_date')
-
-        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') == '' and request.GET.get(
-                'nickname',
-                '').strip() != '':
-            result = Req.objects.filter(active=True,
-                                        nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
-                '-pub_date')
-        else:
-            messages.warning(request, 'Please select at least one field to search')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        query = q.pop()
+        # query =
+        for item in q:
+            query &= item
+        result = Req.objects.filter(query).order_by(
+            '-pub_date')
         return render(request, 'cts_app/result.html', {'nbar': 'search', 'result': result})
     elif search_type == 'quicksearch':
         result = Req.objects.filter(

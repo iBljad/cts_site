@@ -4,29 +4,28 @@
 
 {% block content %}
 
-    {% if user.is_authenticated %}
-        <div class="row">
-            <div class="controls col-centered col-sm-6" align="right">
-            </div>
-        </div>
-        <div class="row row-centered">
-
-            <form action={% url 'cts_app:create' %} method="post" class="form-horizontal" role="form">{% csrf_token %}
-
-                {% include "cts_app/form_snippet.html" %}
-
+    <div class="row">
+        <div class="col-sm-10">
+            {% if user.is_authenticated %}
                 <div class="form-group">
-                    <div class="col-sm-1 col-centered"></div>
-                    <div class="col-sm-4 col-centered" align="right">
-                        <input type="submit" class="btn btn-primary" value="Submit">
-                    </div>
+                    <form action={% url 'cts_app:create' %} method="post" class="form-horizontal"
+                          role="form">{% csrf_token %}
+
+                        {% include "cts_app/form_snippet.html" %}
+                        <div class="form-group">
+                            <div class="controls">
+                                <input type="submit" class="btn btn-primary" value="Submit">
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            {% else %}
+                You are not logged in, please
+                <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">log in or
+                    register</a></li>
+            {% endif %}
         </div>
-    {% else %}
-        You are not logged in, please
-        <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">log in or register</a></li>
-    {% endif %}
+    </div>
 
 
 {% endblock content %}

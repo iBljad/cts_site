@@ -1,7 +1,8 @@
 from django import forms
-from .models import Req, Game, Platform, Link
 from selectable.forms import AutoCompleteSelectField, AutoCompleteSelectWidget
+
 from .lookups import GameLookup
+from .models import Platform
 
 
 class GamesDD(forms.Form):
@@ -31,18 +32,31 @@ class SearchForm(forms.Form):
     platforms = [('', 'Platform')] + [(p.pk, p.platform) for p in Platform.objects.all()]
     # games = [(p.pk, p.game) for p in Game.objects.all()] + [('', 'Game')]
     platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
-                                 choices=platforms)
+                                 choices=platforms, required=False)
     game = AutoCompleteSelectField(
         label='Game',
         widget=AutoCompleteSelectWidget(lookup_class=GameLookup,
-                                        attrs={'class': 'form-control', 'placeholder': 'Game'}),
-        required=False,
+                                        attrs={'class': 'form-control', 'placeholder': 'Game'}), required=False,
         lookup_class=GameLookup,
     )
     # forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
     #                          choices=games)
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nickname'}),
                                max_length=20, required=False)
+
+
+class ReqPostForm(forms.Form):
+    platforms = [('', 'Platform')] + [(p.pk, p.platform) for p in Platform.objects.all()]
+    platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
+                                 choices=platforms)
+    game = AutoCompleteSelectField(
+        label='Game',
+        widget=AutoCompleteSelectWidget(lookup_class=GameLookup,
+                                        attrs={'class': 'form-control', 'placeholder': 'Game'}),
+        lookup_class=GameLookup,
+    )
+    comment = forms.CharField(max_length=1000, widget=forms.Textarea(attrs={'class': 'form-control'}), initial='',
+                              required=False)
 
 
 class UserVote(forms.Form):

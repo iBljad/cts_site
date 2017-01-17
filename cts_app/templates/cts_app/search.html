@@ -9,7 +9,7 @@
     </div>
     <div class="row row-centered">
 
-        <form action={% url 'cts_app:search' %}?search= method="get" class="form-horizontal" role="form">
+        <form action={% url 'cts_app:search' %}?search= method="get" class="form-horizontal" role="form">{% csrf_token %}
 
             {% include "cts_app/form_snippet.html" %}
             <input type="hidden" name="type" value="search">

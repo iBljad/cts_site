@@ -9,7 +9,7 @@
     <h3>Find your co-op teammate here</h3>
 
 
-    <form action={% url 'cts_app:search' %}?search= method="get" class="form-inline" role="form">
+    <form action={% url 'cts_app:search' %}?search= method="get" class="form-inline" role="form">{% csrf_token %}
         <input type="hidden" name="type" value="search">
 
         {{ forms.non_field_errors }}

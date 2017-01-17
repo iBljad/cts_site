@@ -158,7 +158,7 @@
             {% endif %}
             </ul>
             <form action={% url 'cts_app:search' %} class="navbar-form navbar-right
-            " method="get">
+            " method="get">{% csrf_token %}
             <div class="form-group">
                 <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
                 <input type="hidden" name="type" value="quicksearch">

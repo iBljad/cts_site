@@ -1,7 +1,7 @@
 <div class="form-group error">
-            <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+            <label class="control-label ">{{ field.label }}</label>
 
-            <div class="controls col-centered col-sm-4">{{ field }}
+            <div class="controls ">{{ field }}
                             <span class="help-inline">
                                {%  for error in forms.non_field_errors %}<p class="text-danger">{{ error }}</p> {% endfor %}
                             </span>
@@ -11,9 +11,9 @@
 {% for field in forms %}
     {% if field.errors %}
         <div class="form-group error">
-            <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+            <label class="control-label ">{{ field.label }}</label>
 
-            <div class="controls col-centered col-sm-4">{{ field }}
+            <div class="controls ">{{ field }}
                             <span class="help-inline">
                                 {% for error in  field.errors %}<p class="text-danger">{{ error }}</p>{% endfor %}
                             </span>
@@ -24,9 +24,9 @@
             {{ field }}
         {% else %}
             <div class="form-group">
-                <label class="control-label col-centered col-sm-1">{{ field.label }}</label>
+                <label class="control-label ">{{ field.label }}</label>
 
-                <div class="controls col-centered col-sm-4">{{ field }}
+                <div class="controls ">{{ field }}
                     {% if field.help_text %}
                         <p class="help-inline">
                             <small>{{ field.help_text }}</small>
