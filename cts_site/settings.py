@@ -87,6 +87,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cts_site.wsgi.application'
 
+with open('/etc/secret_key.txt') as f:
+    SECRET_KEY = f.read().strip()
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -170,6 +172,13 @@ DEFAULT_FROM_EMAIL = 'goplaycoop@yandex.ru'
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
+
+SESSION_COOKIE_SECURE = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
 
 try:
     from .local_settings import *
