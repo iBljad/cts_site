@@ -28,10 +28,14 @@ def index(request):
 
 
 def create(request):
+    form = ReqPostForm()
     if request.method == 'POST':
         #
         # f = ReqPostForm(request.POST)
         # ReqPostForm.full_clean(f)
+        if request.POST.get('game_1', '') == '':
+            messages.warning(request, 'Please select game by clicking by it')
+            return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
 
         try:
             ttt = Req.objects.get(active=True, game=request.POST.get('game_1', ''),
@@ -49,7 +53,6 @@ def create(request):
                                    comment=request.POST.get('comment', ''))
             except ValidationError as e:
                 messages.error(request, 'Something went wrong:' + e.message)
-                form = ReqPostForm()
                 return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
 
             else:
@@ -61,7 +64,6 @@ def create(request):
         #     platform = Platform.objects.get(pk=platform_id)
         #     link = Link.objects.filter(platform=platform).values('game')
         #     games = Game.objects.filter(id__in=link)
-        form = ReqPostForm()
         return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
 
 
