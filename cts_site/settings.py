@@ -87,9 +87,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cts_site.wsgi.application'
 
-with open('/etc/secret_key.txt') as f:
-    SECRET_KEY = f.read().strip()
-
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
