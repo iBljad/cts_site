@@ -48,12 +48,12 @@ class SearchForm(forms.Form):
 class ReqPostForm(forms.Form):
     platforms = [('', 'Platform')] + [(p.pk, p.platform) for p in Platform.objects.all()]
     platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
-                                 choices=platforms)
+                                 choices=platforms, required=True)
     game = AutoCompleteSelectField(
         label='Game',
         widget=AutoCompleteSelectWidget(lookup_class=GameLookup,
                                         attrs={'class': 'form-control', 'placeholder': 'Game'}),
-        lookup_class=GameLookup,
+        lookup_class=GameLookup, required=True
     )
     comment = forms.CharField(max_length=1000, widget=forms.Textarea(attrs={'class': 'form-control'}), initial='',
                               required=False)
