@@ -136,18 +136,37 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Logo</a>
+
+            <a class="navbar-brand" href="{% url 'cts_app:index' %}">Home</a>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Projects</a></li>
-                <li><a href="#">Contact</a></li>
+                <li>
+                    <a href="{% url 'cts_app:create' %}">Create request</a>
+                </li>
+
+                <li><a href="{% url 'cts_app:search' %}">Search</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="pull-right"><a
+                        href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
+                    out</a></li>
+            {% else %}
+                <li class="pull-right {% if nbar == 'Log in/register' %}active{% endif %}"><a
+                        href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log
+                    in</a></li>
+            {% endif %}
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-            </ul>
+            <form action={% url 'cts_app:search' %} class="navbar-form navbar-right
+            " method="get">
+            <div class="form-group">
+                <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
+                <input type="hidden" name="type" value="quicksearch">
+            </div>
+            <button type="submit" class="btn btn-sm btn-default" data-toggle="tooltip"
+                    data-placement="bottom">Search
+            </button>
+            </form>
         </div>
     </div>
 </nav>

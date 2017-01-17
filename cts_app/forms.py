@@ -33,7 +33,7 @@ class SearchForm(forms.Form):
     platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
                                  choices=platforms)
     game = AutoCompleteSelectField(
-        label='Type the name of a fruit (AutoCompleteWidget)',
+        label='Game',
         widget=AutoCompleteSelectWidget(lookup_class=GameLookup,
                                         attrs={'class': 'form-control', 'placeholder': 'Game'}),
         required=False,

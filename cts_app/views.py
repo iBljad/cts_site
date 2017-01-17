@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from .forms import GamesDD, SearchForm, UserVote, ContactForm
-from .models import Req, Platform, Game, Link, GamesDDForm, RegisterForm, LoginForm, Votes
+from .models import Req, Platform, Game, Link, RegisterForm, LoginForm, Votes
 
 
 def index(request):
@@ -28,11 +28,14 @@ def index(request):
 def create(request):
     if request.method == 'POST':
 
-        f = GamesDDForm(request.POST)
-        GamesDDForm.full_clean(f)
+        # f = GamesDDForm(request.POST)
+        # GamesDDForm.full_clean(f)
+        # f.fields.append('game')
+        # f.fields['game'] = f.fields['game_1']
+        # f.fields.remove('game_1')
 
         try:
-            ttt = Req.objects.get(active=True, game=request.POST.get('game', ''),
+            ttt = Req.objects.get(active=True, game=request.POST.get('game_1', ''),
                                   platform=request.POST.get('platform', ''),
                                   nickname=request.user,
                                   pub_date__gte=timezone.now() - timedelta(days=1))
@@ -41,7 +44,10 @@ def create(request):
 
         except Req.DoesNotExist:
             try:
-                f.save()
+                Req.objects.create(game=Game.objects.get(id__exact=request.POST.get('game_1', '')),
+                                   platform=Platform.objects.get(id__exact=request.POST.get('platform', '')),
+                                   nickname=request.user,
+                                   comment=request.POST.get('comment', ''))
             except ValidationError as e:
                 return HttpResponse(e.message_dict)
 
@@ -49,54 +55,58 @@ def create(request):
                 messages.success(request, 'Your request was successfully posted')
                 return HttpResponseRedirect(reverse('cts_app:index'))
     else:
-        try:
-            platform_id = request.GET.get('platform_id', '')
-            platform = Platform.objects.get(pk=platform_id)
-            link = Link.objects.filter(platform=platform).values('game')
-            games = Game.objects.filter(id__in=link)
-            form = GamesDD(user=request.user, games=games, platform=platform)
-        except Platform.DoesNotExist:
-            raise Http404("Error occurred")
-        return render(request, 'cts_app/create.html', {'games': games, 'forms': form, 'nbar': 'create'})
+        # try:
+        #     platform_id = request.GET.get('platform_id', '')
+        #     platform = Platform.objects.get(pk=platform_id)
+        #     link = Link.objects.filter(platform=platform).values('game')
+        #     games = Game.objects.filter(id__in=link)
+        form = SearchForm()
+        return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
 
 
 def search(request):
     search_type = request.GET.get('type', 'none')
     if search_type == 'search':
         if request.GET.get('game_1', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
-                                                                                                           '').strip() != '':
+                                                                                                             '').strip() != '':
             result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
                                         platform=request.GET.get('platform', ''),
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
-                                                                                                             '').strip() == '':
+        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') != '' and request.GET.get(
+                'nickname',
+                '').strip() == '':
             result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
                                         platform=request.GET.get('platform', '')).order_by('-pub_date')
 
-        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
-                                                                                                             '').strip() != '':
+        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get(
+                'nickname',
+                '').strip() != '':
             result = Req.objects.filter(active=True, game=request.GET.get('game_1', ''),
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
-                                                                                                             '').strip() == '':
+        elif request.GET.get('game_1', '') != '' and request.GET.get('platform', '') == '' and request.GET.get(
+                'nickname',
+                '').strip() == '':
             result = Req.objects.filter(active=True, game=request.GET.get('game_1', '')).order_by('-pub_date')
 
-        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
-                                                                                                             '').strip() != '':
+        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get(
+                'nickname',
+                '').strip() != '':
             result = Req.objects.filter(active=True, platform=request.GET.get('platform', ''),
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')
 
-        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get('nickname',
-                                                                                                             '').strip() == '':
+        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') != '' and request.GET.get(
+                'nickname',
+                '').strip() == '':
             result = Req.objects.filter(active=True, platform=request.GET.get('platform', '')).order_by('-pub_date')
 
-        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') == '' and request.GET.get('nickname',
-                                                                                                             '').strip() != '':
+        elif request.GET.get('game_1', '') == '' and request.GET.get('platform', '') == '' and request.GET.get(
+                'nickname',
+                '').strip() != '':
             result = Req.objects.filter(active=True,
                                         nickname__username__iexact=request.GET.get('nickname', '').strip()).order_by(
                 '-pub_date')

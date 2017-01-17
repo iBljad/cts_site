@@ -46,10 +46,12 @@ class SearchFormModel(ModelForm):
         exclude = ['pub_date', 'comment']
 
 
-class GamesDDForm(ModelForm):
-    class Meta:
-        model = Req
-        exclude = ['pub_date']
+# class GamesDDForm(ModelForm):
+#     game_1 = models.ForeignKey(Game)
+#     platform = models.ForeignKey(Platform)
+#     class Meta:
+#         model = Req
+#         fields = ['game_1', 'platform', 'nickname']
 
 
 class RegisterForm(ModelForm):
@@ -60,6 +62,7 @@ class RegisterForm(ModelForm):
                 'class': 'form-control',
                 'autocomplete': 'off'
             })
+
     email = forms.EmailField(required=True)
 
     class Meta:
