@@ -20,9 +20,8 @@
                     </form>
                 </div>
             {% else %}
-                You are not logged in, please
-                <a href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">log in or
-                    register</a></li>
+                You are not logged in, please <a id="site_login" href="/accounts/login">
+                login</a> or <a id="site_login" href="/accounts/signup">register</a>
             {% endif %}
         </div>
     </div>

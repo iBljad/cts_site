@@ -3,24 +3,15 @@
 {% block title %}Search for request{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="controls col-centered col-sm-6" align="right">
+    <form action={% url 'cts_app:search' %}?search= method="get" class="form-horizontal"
+          role="form">{% csrf_token %}
+
+        {% include "cts_app/form_snippet.html" %}
+        <input type="hidden" name="type" value="search">
+
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Search">
         </div>
-    </div>
-    <div class="row row-centered">
-
-        <form action={% url 'cts_app:search' %}?search= method="get" class="form-horizontal" role="form">{% csrf_token %}
-
-            {% include "cts_app/form_snippet.html" %}
-            <input type="hidden" name="type" value="search">
-
-            <div class="form-group">
-                <div class="col-sm-1 col-centered"></div>
-                <div class="col-sm-4 col-centered" align="right">
-                    <input type="submit" class="btn btn-primary" value="Search">
-                </div>
-            </div>
-        </form>
-    </div>
+    </form>
     <script language="JavaScript">var nameValue = document.getElementById("nickname").value</script>
 {% endblock content %}

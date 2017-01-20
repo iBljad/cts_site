@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.humanize',
+    'bootstrapform',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.twitter',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.vk',
+    'bootstrap3'
 ]
 
 AJAX_LOOKUP_CHANNELS = {

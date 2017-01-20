@@ -23,7 +23,6 @@
 
         ga('create', 'UA-13134830-4', 'auto');
         ga('send', 'pageview');
-
     </script>
     <script>
         $(document).ready(function () {
@@ -65,6 +64,11 @@
 
             $('#id_game_0').djselectable('option', 'prepareQuery', newParameters);
         });
+    </script>
+    <script>
+        function toggler(elementId) {
+            $("#" + elementId).toggle();
+        }
     </script>
 
     <style type="text/css">
@@ -119,6 +123,34 @@
             height: 90px;
         {#            background-color: #f5f5f5;#}
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .ui-autocomplete-input {
+            display: block;
+            width: 100%;
+            height: 38px;
+            padding: 8px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #888888;
+            background-color: #ffffff;
+            background-image: none;
+            border: 1px solid #282828;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        }
+
+        .ui-widget, .ui-widget-content {
+            font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+        }
     </style>
     <title>Go Play Coop — {% block headtitle %} {% endblock %}
         {#        {% if nbar == 'home' %} — Home{% endif %}#}
@@ -142,20 +174,36 @@
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="{% url 'cts_app:create' %}">Create request</a>
+                    <a href="{% url 'cts_app:create' %}"><span class="glyphicon glyphicon-plus"></span>Create
+                        request</a>
                 </li>
 
-                <li><a href="{% url 'cts_app:search' %}">Search</a>
+                <li><a href="{% url 'cts_app:search' %}"><span class="glyphicon glyphicon-search"></span>Search</a>
                 </li>
                 {% if user.is_authenticated %}
-                <li class="pull-right"><a
-                        href="{% url 'cts_app:login' %}?action=logout&next={{ request.get_full_path|urlencode }}">Log
-                    out</a></li>
-            {% else %}
-                <li class="pull-right {% if nbar == 'Log in/register' %}active{% endif %}"><a
-                        href="{% url 'cts_app:login' %}?action=login&next={{ request.get_full_path|urlencode }}">Log
-                    in</a></li>
-            {% endif %}
+                    <li class="pull-right">
+                        <a href="/accounts/logout">
+                            <span class="glyphicon glyphicon-log-out"></span> Log out
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <span class="glyphicon glyphicon-log-in"></span> Log-in<span
+                                class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a id="site_login" href="/accounts/login"><span
+                                    class="glyphicon glyphicon-log-in"></span>
+                                Sign in</a></li>
+                            <li><a id="site_login" href="/accounts/signup"><span
+                                    class="glyphicon glyphicon-sunglasses"></span> Sign up</a></li>
+
+                            <li><a id="facebook_login" href="/accounts/facebook/login">Sign in with Facebook</a></li>
+                            <li><a id="twitter_login" href="/accounts/twitter/login">Sign in with Twitter</a>
+                            <li><a id="vk_login" href="/accounts/vk/login">Sign in with VK</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
             </ul>
             <form action={% url 'cts_app:search' %} class="navbar-form navbar-right
             " method="get">{% csrf_token %}

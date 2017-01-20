@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^cts_app/', include('cts_app.urls', namespace='cts_app')),
     url(r'^admin/', admin.site.urls),
     url(r'^selectable/', include('selectable.urls')),
+    url(r'^accounts/', include('allauth.urls')),
 ]
