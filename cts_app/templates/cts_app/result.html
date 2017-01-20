@@ -18,7 +18,7 @@
                 </tbody>
             </table>
     {% else %}
-        <p>No reqs are available.</p>
+        <p>No reqs are available, so be first to <a href="{% url 'cts_app:create' %}">create</a> it!
     {% endif %}
 
 {% endblock content %}
