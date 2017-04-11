@@ -15,7 +15,7 @@ class GameLookup(ModelLookup):
         platform = request.GET.get('platform', '')
         if platform:
             link = Link.objects.filter(platform=platform).values('game')
-            results = Game.objects.filter(id__in=link)
+            results = Game.objects.filter(id__in=link).filter(game__icontains=term)
             # results = results.filter(platform=platform)
         return results
 
