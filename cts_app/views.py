@@ -64,7 +64,10 @@ def create(request):
         #     platform = Platform.objects.get(pk=platform_id)
         #     link = Link.objects.filter(platform=platform).values('game')
         #     games = Game.objects.filter(id__in=link)
-        return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
+        if request.user.is_authenticated():
+            return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
+        else:
+            return HttpResponseRedirect("/accounts/login")
 
 
 def search(request):

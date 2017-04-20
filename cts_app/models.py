@@ -13,19 +13,12 @@ class Platform(models.Model):
 
 class Game(models.Model):
     game = models.CharField(max_length=1000)
-    release_date = models.DateField('release date')
+    genre = models.CharField(max_length=100)
+    platform = models.ForeignKey(Platform)
+    release_date = models.DateField('release date', blank=True)
 
     def __str__(self):
         return self.game
-
-
-class Link(models.Model):
-    platform = models.ForeignKey(Platform)
-    game = models.ForeignKey(Game)
-    link_name = models.CharField('Link Name', max_length=1000)
-
-    def __str__(self):
-        return self.link_name
 
 
 class Req(models.Model):
