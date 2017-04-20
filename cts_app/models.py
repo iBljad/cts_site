@@ -15,7 +15,7 @@ class Game(models.Model):
     game = models.CharField(max_length=1000)
     genre = models.CharField(max_length=100)
     platform = models.ForeignKey(Platform)
-    release_date = models.DateField('release date', blank=True)
+    release_date = models.DateField('release date', null=True)
 
     def __str__(self):
         return self.game
