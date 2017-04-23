@@ -23,7 +23,7 @@ class GamesDD(forms.Form):
                 'class': 'form-control'
             })
         self.fields['game'].choices = [(p.pk, p.game) for p in self.games_list]
-        self.fields['platform'].choices = [(p.pk) for p in [self.platform_id]]
+        self.fields['platform'].choices = [p.pk for p in [self.platform_id]]
         self.fields['platform'].initial = self.platform_id.id
         self.fields['nickname'].initial = self.nickname.id
 

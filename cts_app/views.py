@@ -67,7 +67,7 @@ def create(request):
         if request.user.is_authenticated():
             return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
         else:
-            return HttpResponseRedirect("/accounts/login")
+            return HttpResponseRedirect("/accounts/login?next=" + request.path)
 
 
 def search(request):
