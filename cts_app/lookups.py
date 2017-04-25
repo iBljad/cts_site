@@ -13,11 +13,13 @@ class GameLookup(ModelLookup):
     def get_query(self, request, term):
         platform = request.GET.get('platform', '')
         if platform:
-            # results = super(GameLookup, self).get_query(request, term)
-            results = Game.objects.filter(platform=platform).filter(game__icontains=term)
-            # results = results.filter(platform=platform)
+            results = Game.objects.select_related('platform').filter(platform=platform).filter(game__icontains=term)
             return results
         else:
+            results = Game.objects.select_related('platform').filter(game__icontains=term).distinct('game')
+            results = list(results)
+            for game in results:
+                game.game = game.game + ' (' + game.platform.platform + ')'
             return ''
 
 

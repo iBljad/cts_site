@@ -1,4 +1,6 @@
 {% load static %}
+{% load i18n %}
+{% load account socialaccount %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -99,6 +101,22 @@
 
                 <li><a href="{% url 'cts_app:search' %}"><span class="glyphicon glyphicon-search"></span>Search</a>
                 </li>
+            </ul>
+
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <form action={% url 'cts_app:search' %} class="navbar-form navbar-right
+                    " method="get">{% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
+                        <input type="hidden" name="type" value="quicksearch">
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-default" data-toggle="tooltip"
+                            data-placement="bottom">Search
+                    </button>
+                    </form>
+                </li>
                 {% if user.is_authenticated %}
                     <li class="pull-right">
                         <a href="/accounts/logout">
@@ -106,34 +124,49 @@
                         </a>
                     </li>
                 {% else %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            <span class="glyphicon glyphicon-log-in"></span> Log-in<span
-                                class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a id="site_login" href="/accounts/login/?next={{ request.path }}"><span
-                                    class="glyphicon glyphicon-log-in"></span>
-                                Sign in</a></li>
-                            <li><a id="site_login" href="/accounts/signup/?next={{ request.path }}"><span
-                                    class="glyphicon glyphicon-sunglasses"></span> Sign up</a></li>
 
-                            <li><a id="facebook_login" href="/accounts/facebook/login">Sign in with Facebook</a></li>
-                            <li><a id="twitter_login" href="/accounts/twitter/login">Sign in with Twitter</a>
-                            <li><a id="vk_login" href="/accounts/vk/login">Sign in with VK</a></li>
-                        </ul>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle col-xs-12" data-toggle="dropdown">
+                            <i class="fa fa-user-circle fa-lg" aria-hidden="true"></i> Login
+                        </a>
+                        <div class="dropdown-menu col-xs-12"
+                             style="padding:17px; min-width: 250px; opacity: 0.95;">
+                            <form class="login" method="POST" action="{% url 'account_login' %}">
+                                {% csrf_token %}
+                                {% if redirect_field_value %}
+                                    <input type="hidden" name="{{ redirect_field_name }}"
+                                           value="{{ redirect_field_value }}"/>
+                                {% endif %}
+
+                                <div class="form-group"><input autofocus="autofocus" class="form-control"
+                                                               id="id_login" maxlength="150" name="login"
+                                                               placeholder={% trans "Username" %} title=""
+                                                               type="text" required=""></div>
+                                <div class="form-group"><input
+                                        class="form-control" id="id_password" name="password"
+                                        placeholder={% trans "Password" %} title="" type="password"
+                                        required=""></div>
+                                <div class="form-group">
+                                    <div class="checkbox"><label for="id_remember">
+                                        <input class="" id="id_remember" name="remember" type="checkbox">
+                                        {% trans "Remember Me" %}</label></div>
+                                </div>
+                                <div class="form-group">
+
+                                    {% get_providers as socialaccount_providers %}
+                                    {% include "socialaccount/snippets/provider_shortlist.html" with process="login" %}
+                                </div>
+                                <button class="primaryAction btn btn-primary"
+                                        type="submit">{% trans "Sign In" %}</button>
+                                <a class="button secondaryAction"
+                                   href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                            </form>
+                        </div>
+
                     </li>
                 {% endif %}
             </ul>
-            <form action={% url 'cts_app:search' %} class="navbar-form navbar-right
-            " method="get">{% csrf_token %}
-            <div class="form-group">
-                <input type="text" class="form-control input-sm" placeholder="Quick search" name="query">
-                <input type="hidden" name="type" value="quicksearch">
-            </div>
-            <button type="submit" class="btn btn-sm btn-default" data-toggle="tooltip"
-                    data-placement="bottom">Search
-            </button>
-            </form>
         </div>
     </div>
 </nav>
