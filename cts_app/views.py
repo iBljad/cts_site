@@ -33,13 +33,14 @@ def create(request):
         #
         # f = ReqPostForm(request.POST)
         # ReqPostForm.full_clean(f)
-        if request.POST.get('game_1', '') == '':
-            messages.warning(request, 'Please select game by clicking by it')
-            return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
-
+        # if request.POST.get('game_1', '') == '':
+        #     messages.warning(request, 'Please select game by clicking by it')
+        #     return render(request, 'cts_app/create.html', {'forms': form, 'nbar': 'create'})
+        platform = Game.objects.get(id__exact=request.POST.get('game_1', '')).platform
+        game = Game.objects.get(id__exact=request.POST.get('game_1', ''))
         try:
-            ttt = Req.objects.get(active=True, game=request.POST.get('game_1', ''),
-                                  platform=request.POST.get('platform', ''),
+            ttt = Req.objects.get(active=True, game=game,
+                                  platform=platform,
                                   nickname=request.user,
                                   pub_date__gte=timezone.now() - timedelta(days=1))
             messages.warning(request, 'Request with the same platform, game and nickname already exists')
@@ -47,8 +48,8 @@ def create(request):
 
         except Req.DoesNotExist:
             try:
-                Req.objects.create(game=Game.objects.get(id__exact=request.POST.get('game_1', '')),
-                                   platform=Platform.objects.get(id__exact=request.POST.get('platform', '')),
+                Req.objects.create(game=game,
+                                   platform=platform,
                                    nickname=request.user,
                                    comment=request.POST.get('comment', ''))
             except ValidationError as e:
@@ -88,7 +89,6 @@ def search(request):
     search_type = request.GET.get('type', 'none')
     if search_type == 'search':
         query = q.pop()
-        # query =
         for item in q:
             query &= item
         result = Req.objects.filter(query).order_by(
@@ -105,71 +105,71 @@ def search(request):
         form = SearchForm()
         return render(request, 'cts_app/search.html', {'forms': form, 'nbar': 'search'})
 
-
-def login(request):
-    next_page = request.GET.get('next', 'cts_app:index')
-    if request.GET.get('action', '') == 'logout':
-        if request.user.is_authenticated():
-            logout(request)
-            messages.success(request, 'You were successfully logged out')
-            return redirect(request.GET.get('next', 'cts_app:index'))
-        else:
-            messages.warning('You are not logged in')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    elif request.POST.get('action', '') == 'login':
-        login_form = LoginForm(request.POST)
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                auth_login(request, user)
-                messages.success(request, 'You were successfully logged in')
-                # HttpResponseRedirect(redirect_to)
-                return redirect(next_page)
-            else:
-                login_form.add_error('Your account was disabled')
-                return render(request, 'cts_app/login.html',
-                              {'nbar': 'Log in/register', 'forms': login_form, 'forms2': RegisterForm(),
-                               'next': next_page})
-                # TODO Return an 'invalid login' error message.
-        else:
-            login_form.add_error(field=None, error='Invalid login or password')
-            return render(request, 'cts_app/login.html',
-                          {'nbar': 'Log in/register', 'forms': login_form, 'forms2': RegisterForm(),
-                           'next': next_page})
-    elif request.POST.get('action', '') == 'register':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            try:
-                ttt = User.objects.get(email=form.cleaned_data['email'])
-                form.add_error('email', 'Email already exists')
-                return render(request, 'cts_app/login.html',
-                              {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': form,
-                               'next': next_page})
-            except User.DoesNotExist:
-                u = User.objects.create_user(username=form.cleaned_data['username'],
-                                             email=form.cleaned_data['email'],
-                                             password=form.cleaned_data['password'])
-                p1 = Permission.objects.get(name__icontains='Can add req')
-                p2 = Permission.objects.get(name__icontains='Can change req')
-                p3 = Permission.objects.get(name__icontains='Can delete req')
-                u.user_permissions.add(p1, p2, p3)
-
-                username = request.POST.get('username', '')
-                password = request.POST.get('password', '')
-                user = authenticate(username=username, password=password)
-                auth_login(request, user)
-                messages.success(request, 'You were successfully registered, thanks!')
-                return redirect(next_page)
-        else:
-            return render(request, 'cts_app/login.html',
-                          {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': form,
-                           'next': next_page})
-    else:
-        return render(request, 'cts_app/login.html',
-                      {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': RegisterForm(),
-                       'next': next_page})
+#
+# def login(request):
+#     next_page = request.GET.get('next', 'cts_app:index')
+#     if request.GET.get('action', '') == 'logout':
+#         if request.user.is_authenticated():
+#             logout(request)
+#             messages.success(request, 'You were successfully logged out')
+#             return redirect(request.GET.get('next', 'cts_app:index'))
+#         else:
+#             messages.warning('You are not logged in')
+#             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+#     elif request.POST.get('action', '') == 'login':
+#         login_form = LoginForm(request.POST)
+#         username = request.POST.get('username', '')
+#         password = request.POST.get('password', '')
+#         user = authenticate(username=username, password=password)
+#         if user is not None:
+#             if user.is_active:
+#                 auth_login(request, user)
+#                 messages.success(request, 'You were successfully logged in')
+#                 # HttpResponseRedirect(redirect_to)
+#                 return redirect(next_page)
+#             else:
+#                 login_form.add_error('Your account was disabled')
+#                 return render(request, 'cts_app/login.html',
+#                               {'nbar': 'Log in/register', 'forms': login_form, 'forms2': RegisterForm(),
+#                                'next': next_page})
+#                 # TODO Return an 'invalid login' error message.
+#         else:
+#             login_form.add_error(field=None, error='Invalid login or password')
+#             return render(request, 'cts_app/login.html',
+#                           {'nbar': 'Log in/register', 'forms': login_form, 'forms2': RegisterForm(),
+#                            'next': next_page})
+#     elif request.POST.get('action', '') == 'register':
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():
+#             try:
+#                 ttt = User.objects.get(email=form.cleaned_data['email'])
+#                 form.add_error('email', 'Email already exists')
+#                 return render(request, 'cts_app/login.html',
+#                               {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': form,
+#                                'next': next_page})
+#             except User.DoesNotExist:
+#                 u = User.objects.create_user(username=form.cleaned_data['username'],
+#                                              email=form.cleaned_data['email'],
+#                                              password=form.cleaned_data['password'])
+#                 p1 = Permission.objects.get(name__icontains='Can add req')
+#                 p2 = Permission.objects.get(name__icontains='Can change req')
+#                 p3 = Permission.objects.get(name__icontains='Can delete req')
+#                 u.user_permissions.add(p1, p2, p3)
+#
+#                 username = request.POST.get('username', '')
+#                 password = request.POST.get('password', '')
+#                 user = authenticate(username=username, password=password)
+#                 auth_login(request, user)
+#                 messages.success(request, 'You were successfully registered, thanks!')
+#                 return redirect(next_page)
+#         else:
+#             return render(request, 'cts_app/login.html',
+#                           {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': form,
+#                            'next': next_page})
+#     else:
+#         return render(request, 'cts_app/login.html',
+#                       {'nbar': 'Log in/register', 'forms': LoginForm(), 'forms2': RegisterForm(),
+#                        'next': next_page})
 
 
 def profile(request, user=''):

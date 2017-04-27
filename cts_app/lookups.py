@@ -16,11 +16,11 @@ class GameLookup(ModelLookup):
             results = Game.objects.select_related('platform').filter(platform=platform).filter(game__icontains=term)
             return results
         else:
-            results = Game.objects.select_related('platform').filter(game__icontains=term).distinct('game')
+            results = Game.objects.select_related('platform').filter(game__icontains=term)
             results = list(results)
             for game in results:
                 game.game = game.game + ' (' + game.platform.platform + ')'
-            return ''
+            return results
 
 
 registry.register(GameLookup)

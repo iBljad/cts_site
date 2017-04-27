@@ -1,11 +1,12 @@
 {% load socialaccount %}
 
 {% get_providers as socialaccount_providers %}
-
+<div class="btn-group btn-group-justified">
 {% for provider in socialaccount_providers %}
 
-<a class="btn btn-social-icon btn-{{ provider.name|lower }}"
-   href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
-    <span class="fa fa-{{ provider.name|lower }}"></span>
-</a>
+    <a class="btn btn-social-icon btn-{{ provider.name|lower }}"
+       href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+        <span class="fa fa-{{ provider.name|lower }}"></span>
+    </a>
 {% endfor %}
+</div>

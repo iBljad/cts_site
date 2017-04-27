@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
-    'allauth.socialaccount.providers.google',
+    # 'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.vk',
     'bootstrap3'
 ]
@@ -165,9 +165,9 @@ SOCIALACCOUNT_PROVIDERS = {
     'vk': {
         'SCOPE': ['email']
     },
-    'google': {
-        'SCOPE': ['email']
-    }
+    # 'google': {
+    #     'SCOPE': ['email']
+    # }
 }
 
 DEFAULT_FROM_EMAIL = 'goplaycoop@yandex.ru'
