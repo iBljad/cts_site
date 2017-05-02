@@ -1,7 +1,7 @@
+from django import forms
+from django.contrib.auth.models import User
 from django.db import models
 from django.forms import ModelForm
-from django.contrib.auth.models import User
-from django import forms
 
 
 class Platform(models.Model):
@@ -15,7 +15,7 @@ class Game(models.Model):
     game = models.CharField(max_length=1000)
     genre = models.CharField(max_length=100)
     platform = models.ForeignKey(Platform)
-    release_date = models.DateField('release date', null=True)
+    # release_date = models.DateField('release date', null=True)
 
     def __str__(self):
         return self.game
@@ -31,6 +31,11 @@ class Req(models.Model):
 
     def __str__(self):
         return self.pub_date.__str__()
+
+
+class Link(models.Model):
+    game = models.ForeignKey(Game)
+    platform = models.ForeignKey(Platform)
 
 
 class SearchFormModel(ModelForm):

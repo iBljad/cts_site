@@ -1,13 +1,14 @@
 {% extends 'cts_app/base.html' %}
 {% block headtitle %}Main page{% endblock %}
 {% block title %}Main page{% endblock %}
+{% block phrase %}Find your co-op teammate here!{% endblock %}
 {% block content %}
-    {% load humanize %}
+{% load humanize %}
 
-
-    <div class="page-header">
-        <h3>Find your co-op teammate here</h3>
-    </div>
+{##}
+{#    <div class="page-header">#}
+{#        <h3></h3>#}
+{#    </div>#}
 
 
     <form action={% url 'cts_app:search' %}?search= method="get" class="form-inline" role="form">{% csrf_token %}
@@ -19,9 +20,8 @@
         {{ forms.platform }}
         {{ forms.game.errors }}
         {{ forms.game }}
-        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>SEARCH</button>
-        <a href="{% url 'cts_app:create' %}" class="btn btn-info"><span class="glyphicon glyphicon-plus"></span>POST
-            REQUEST</a>
+        <button type="submit" class="btn btn-primary"><i class="material-icons">search</i>SEARCH</button>
+        <a href="{% url 'cts_app:create' %}" class="btn btn-info"><i class="material-icons">add</i>POST REQUEST</a>
         <div id="advanced" class="collapse">
             {{ forms.nickname.errors }}
             {{ forms.nickname }}
@@ -33,15 +33,22 @@
     </form>
 
     <table class="table table-condensed table-hover table-responsive">
+       <thead>
+            <tr>
+                <th class="text-left">Game</th>
+                <th class="text-left">User</th>
+                <th class="text-right">Date posted</th>
+            </tr>
+            </thead>
         <tbody>
         {% for req in result %}
             <tr>
-                <td class="col-sm-2">{{ req.game }} ({{ req.platform }})
+                <td class="text-left">{{ req.game }} ({{ req.platform }})
 
-                <td class="col-sm-5" style="word-break:break-all;">
+                <td class="text-left" style="word-break:break-all;">
                     <span class="glyphicon glyphicon-user"></span>
                     {{ req.nickname }}{% if req.comment %}:{% endif %} {{ req.comment }}</td>
-                <td class="col-sm-3 text-right">{{ req.pub_date|naturaltime }}</td>
+                <td class="text-right">{{ req.pub_date|naturaltime }}</td>
             </tr>
         {% endfor %}
         </tbody>
