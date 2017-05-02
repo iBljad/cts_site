@@ -15,6 +15,7 @@ class Game(models.Model):
     game = models.CharField(max_length=1000)
     genre = models.CharField(max_length=100)
     platform = models.ForeignKey(Platform)
+
     # release_date = models.DateField('release date', null=True)
 
     def __str__(self):
@@ -36,6 +37,10 @@ class Req(models.Model):
 class Link(models.Model):
     game = models.ForeignKey(Game)
     platform = models.ForeignKey(Platform)
+
+
+class Language(models.Model):
+    language = models.CharField(max_length=100)
 
 
 class SearchFormModel(ModelForm):
