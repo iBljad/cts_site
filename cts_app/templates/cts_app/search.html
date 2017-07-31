@@ -1,9 +1,10 @@
 {% extends 'cts_app/base.html' %}
 {% block headtitle %}Search for request{% endblock %}
 {% block title %}Search for request{% endblock %}
+{% block phrase %}Search for requests{% endblock %}
 
 {% block content %}
-    <form action={% url 'cts_app:search' %}?search= method="get" class="form-horizontal"
+    <form action={% url 'cts_app:search' %}?search= method="post" class="form-horizontal"
           role="form">{% csrf_token %}
 
         {% include "cts_app/form_snippet.html" %}

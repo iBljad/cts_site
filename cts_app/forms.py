@@ -1,54 +1,49 @@
 from django import forms
 from selectable.forms import AutoCompleteSelectField, AutoCompleteSelectWidget
 
-from .lookups import GameLookup
+from .lookups import GameLookup, PlatformLookup
 from .models import Platform
 
-
-# class GamesDD(forms.Form):
-#     game = forms.ChoiceField()
-#     platform = forms.ChoiceField(widget=forms.HiddenInput())
-#     nickname = forms.CharField(widget=forms.HiddenInput())
-#     comment = forms.CharField(max_length=280, widget=forms.Textarea(), initial='')
-#     active = forms.BooleanField(initial=True, widget=forms.HiddenInput())
-#
-#     def __init__(self, *args, **kwargs):
-#         self.nickname = kwargs.pop('user')
-#         self.games_list = kwargs.pop('games')
-#         self.platform_id = kwargs.pop('platform')
-#         # self.game = forms.ChoiceField()
-#         super(GamesDD, self).__init__(*args, **kwargs)
-#         for field in iter(self.fields):
-#             self.fields[field].widget.attrs.update({
-#                 'class': 'form-control'
-#             })
-#         self.fields['game'].choices = [(p.pk, p.game) for p in self.games_list]
-#         self.fields['platform'].choices = [p.pk for p in [self.platform_id]]
-#         self.fields['platform'].initial = self.platform_id.id
-#         self.fields['nickname'].initial = self.nickname.id
-#
 
 class SearchForm(forms.Form):
     # platforms = [('', 'Platform')] + [(p.pk, p.platform) for p in Platform.objects.all()]
     # # games = [(p.pk, p.game) for p in Game.objects.all()] + [('', 'Game')]
-    # platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
-    #                              choices=platforms, required=False)
+    platform = AutoCompleteSelectField(
+        label='Platform',
+        widget=AutoCompleteSelectWidget(lookup_class=PlatformLookup,
+                                        attrs={'class': 'form-control', 'placeholder': 'Platform',
+                                               'data-selectable-options': {'minLength': 0}}),
+        required=False,
+        lookup_class=PlatformLookup,
+    )
     game = AutoCompleteSelectField(
         label='Game',
         widget=AutoCompleteSelectWidget(lookup_class=GameLookup,
                                         attrs={'class': 'form-control', 'placeholder': 'Game'}), required=False,
         lookup_class=GameLookup,
     )
-    # forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
-    #                          choices=games)
     nickname = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nickname'}),
                                max_length=20, required=False)
 
 
+class NewSearchForm(forms.Form):
+    game = AutoCompleteSelectField(
+        label='Game',
+        widget=AutoCompleteSelectWidget(lookup_class=GameLookup,
+                                        attrs={'class': 'form-control', 'placeholder': 'Game'}), required=False,
+        lookup_class=GameLookup,
+    )
+
+
 class ReqPostForm(forms.Form):
-    # platforms = [('', 'Platform')] + [(p.pk, p.platform) for p in Platform.objects.all()]
-    # platform = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-control'}),
-    #                              choices=platforms, required=True)
+    platform = AutoCompleteSelectField(
+        label='Platform',
+        widget=AutoCompleteSelectWidget(lookup_class=PlatformLookup,
+                                        attrs={'class': 'form-control', 'placeholder': 'Platform',
+                                               'data-selectable-options': {'minLength': 0}}),
+        required=False,
+        lookup_class=PlatformLookup,
+    )
     game = AutoCompleteSelectField(
         label='Game',
         widget=AutoCompleteSelectWidget(lookup_class=GameLookup,

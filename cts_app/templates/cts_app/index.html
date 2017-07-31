@@ -11,7 +11,7 @@
 {#    </div>#}
 
 
-    <form action={% url 'cts_app:search' %}?search= method="get" class="form-inline" role="form">{% csrf_token %}
+    <form action={% url 'cts_app:search' %} method="post" class="form-inline" role="form">{% csrf_token %}
         <input type="hidden" name="type" value="search">
 
         {{ forms.non_field_errors }}
@@ -47,6 +47,7 @@
 
                 <td class="text-left" style="word-break:break-all;">
                     <span class="glyphicon glyphicon-user"></span>
+{#            linebreaks br?#}
                     {{ req.nickname }}{% if req.comment %}:{% endif %} {{ req.comment }}</td>
                 <td class="text-right">{{ req.pub_date|naturaltime }}</td>
             </tr>

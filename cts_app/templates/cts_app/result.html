@@ -1,6 +1,7 @@
 {% extends 'cts_app/base.html' %}
 {% block headtitle %}Request search result{% endblock %}
 {% block title %}Request search result{% endblock %}
+{% block phrase %}Search for requests{% endblock %}
 {% block content %}
     {% load humanize %}
 
@@ -24,7 +25,7 @@
             </tbody>
         </table>
     {% else %}
-        <p>No reqs are available, so be first to <a href="{% url 'cts_app:create' %}">create</a> it!
+        <p>No reqs are available, so be first to <a href="{% url 'cts_app:create' %}?game={{ request.POST.game_1 }}&platform={{ request.POST.platform_1 }}">create</a> it!
     {% endif %}
 
 {% endblock content %}
